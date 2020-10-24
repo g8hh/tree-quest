@@ -121,6 +121,10 @@ function layerDataReset(layer, keep = []) {
 	}
 }
 
+function canRespec(layer){
+	return tmp[layer].buyables.respec && (tmp[layer].buyables.showRespec== undefined || tmp[layer].buyables.showRespec)
+}
+
 function resetBuyables(layer){
 	if (layers[layer].buyables) 
 		player[layer].buyables = getStartBuyables(layer)
@@ -273,8 +277,9 @@ function gameLoop(diff) {
 	if (isEndgame() || gameEnded) gameEnded = 1
 
 	if (isNaN(diff)) diff = 0
-	if (gameEnded && !player.keepGoing) {
-		diff = 0
+//	if (gameEnded && !player.keepGoing) {
+	if (gameEnded) { //Prevent gameplay until ready
+			diff = 0
 		player.tab = "gameEnded"
 	}
 	if (player.devSpeed) diff *= player.devSpeed

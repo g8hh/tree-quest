@@ -456,6 +456,7 @@ function canAffordPurchase(layer, thing, cost) {
 		}
 		else if (thing.currencyLayer){
 			let lr = thing.currencyLayer
+			console.log(lr + " and " + name)
 			return !(player[lr][name].lt(cost)) 
 		}
 		else {

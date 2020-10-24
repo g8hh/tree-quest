@@ -8,22 +8,20 @@
 	<script type="text/javascript" src="js/layerSupport.js"></script>
 	<script type="text/javascript" src="js/mod.js"></script>
 
-	<script type="text/javascript" src="js/layers/universal/help.js"></script>
+    <script type="text/javascript" src="js/layers/universal/help.js"></script>
 	<script type="text/javascript" src="js/layers/universal/progress.js"></script>
 
-	<!-- Prologue layers -->
-	<script type="text/javascript" src="js/layers/main.js"></script>
-	<script type="text/javascript" src="js/layers/corridor.js"></script>
+	<script type="text/javascript" src="js/layers/chapter_1/row_0.js"></script>
+	<script type="text/javascript" src="js/layers/chapter_1/row_1.js"></script>
 
-	<!-- Interior layers -->
-	<script type="text/javascript" src="js/layers/interior.js"></script>
+
 
 	<script type="text/javascript" src="js/temp.js"></script>
 	<script type="text/javascript" src="js/game.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/v.js"></script>
 	<script type="text/javascript" src="js/canvas.js"></script>
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+
 </head>
 <body onload="load()">
 	<div id="app">
@@ -34,18 +32,17 @@
 		<div v-if="player.tab=='gameEnded'" class="fullWidth">
 			<br>
 			<h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>
-			<h3>If you're seeing this, you're too early. Go away.</h3><br>
-			<h3>When there's content ready I'll let you know.</h3><br><br>
+			<h3>Congratulations! You have reached the end and beaten this game, but for now...</h3><br>
+			<h3>Please check the Discord to see there are new content updates!</h3><br><br>
 			<div v-if="!player.timePlayedReset">It took you {{formatTime(player.timePlayed)}} to beat the game.</div>
 			<div v-if="player.timePlayedReset">Make sure that you record the time in your stream or else your speedrun won't count!</div>
 			<br>
-			<!--<button class="longUpg can" onclick="hardReset(true)">Play Again</button>&nbsp;&nbsp;&nbsp;&nbsp;<!--<button class="longUpg can" onclick="keepGoing()">Keep Going</button>-->
+			<button class="longUpg can" onclick="hardReset(true)">Play Again</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="longUpg can" onclick="keepGoing()">Keep Going</button>
 			<br><br><br>
-			<span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
-			<a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
-			<a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a><br>
+			<a class="link" href="https://discord.gg/F3xveHV" target="_blank">The Modding Tree Discord</a><br>
+			<a class="link" href="http://discord.gg/wwQfgPa" target="_blank">Main Prestige Tree Discord</a><br>
 			<br><br>
-			If you would like to speedrun this, too bad.
+			If you would like to speedrun this, press Play Again and record your attempt, then submit on the Discord Server in the channel #speedrun-submissions.
 			<br><br><br>
 			<h1>Oh, you are still reading this?</h1>
 			<br>
@@ -60,10 +57,6 @@
 			<h2>{{modInfo.name}}</h2>
 			<br>
 			<h3>{{VERSION.withName}}</h3>
-			<span v-if="modInfo.author">
-				<br>
-				Made by {{modInfo.author}}	
-			</span>
 			<br>
 			The Modding Tree {{TMT_VERSION.tmtNum}} by Acamaeda
 			<br>
@@ -110,14 +103,7 @@
 			<div id="version" class="overlayThing" style="margin-right: 13px">{{VERSION.withoutName}}</div>
 			<img id="optionWheel"  class="overlayThing" v-if="player.tab!='options'" src="options_wheel.png" onclick="showTab('options')"></img>
 			<div id="info" v-if="player.tab!='info'"  class="overlayThing" onclick="showTab('info')"><br>i</div>
-			<div id="discord" class="overlayThing">
-				<img onclick="window.open((modInfo.discordLink ? modInfo.discordLink : 'https://discord.gg/F3xveHV'),'mywindow')" src="discord.png"  target="_blank"></img>
-				<ul id="discord-links">
-					<li v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></li>
-					<li><a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br></li>
-					<li><a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a></li>
-				</ul>
-			</div>
+			<img id="discord"  class="overlayThing" onclick="window.open((modInfo.discordLink ? modInfo.discordLink : 'https://discord.gg/F3xveHV'),'mywindow')" src="discord.png"  target="_blank"></img>
 			<div class="overlayThing" style="padding-bottom:7px; width: 90%">
 				<span v-if="player.devSpeed && player.devSpeed != 1" class="overlayThing">
 					<br>Dev Speed: {{format(player.devSpeed)}}x<br>
@@ -162,19 +148,7 @@
 				<span v-if="canGenPoints()"  class="overlayThing">({{format(getPointGen())}}/sec)</span>
 				<div v-for="thing in tmp.displayThings" class="overlayThing"><span v-if="thing" v-html="thing"></span></div>
 			</div>
-			<!-- *************************** Modify the tree in the table below - because I need to draw maps like a special snowflake *************************** -->
-
-			<table>
-				<td><layer-node layer='i1' abb='I1'></layer-node></td>
-				<td><button class="treeNode hidden"></button></td>
-				<td><layer-node layer='i2' abb='I2'></layer-node></td>
-				<td><button class="treeNode hidden"></button></td>
-				<td><layer-node layer='i3' abb='I3'></layer-node></td>
-			</table><table>
-				<td><button class="treeNode hidden"></button></td>
-			</table>
-
-
+			<!-- *************************** Modify the tree in the table below! *************************** -->
 			<table>
 				<td><layer-node layer='c8' abb='C8'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
@@ -213,13 +187,15 @@
 					<main-display v-bind:style="tmp[layer].componentStyles['main-display']" :layer="layer"></main-display>
 					<div v-if="tmp[layer].type !== 'none'">
 						<prestige-button v-bind:style="tmp[layer].componentStyles['prestige-button']" :layer="layer"></prestige-button>
+						<span v-if="tmp[layer].type=='normal' && tmp[layer].resetGain.lt(100) && player[layer].points.lt(1e3)"><br>You have {{formatWhole(tmp[layer].baseAmt)}} {{tmp[layer].baseResource}}</span>
 					</div>
-					<resource-display v-bind:style="tmp[layer].componentStyles['resource-display']" :layer="layer"></resource-display>
 					<br><br>
 					<div v-if="Array.isArray(layers[layer].topsection)">
 						<column :layer="layer" :data="tmp[layer].topsection"></column>
 						<br>
 					</div>
+					<span v-if="player[layer].best != undefined">Your best {{tmp[layer].resource}} is {{formatWhole(player[layer].best)}}<br></span>
+					<span v-if="player[layer].total != undefined">You have made a total of {{formatWhole(player[layer].total)}} {{tmp[layer].resource}}<br></span>
 					<milestones v-bind:style="tmp[layer].componentStyles.milestones" :layer="layer"></milestones>
 					<upgrades v-bind:style="tmp[layer].componentStyles['upgrades']" :layer="layer"></upgrades>
 					<div v-if="Array.isArray(layers[layer].midsection)">

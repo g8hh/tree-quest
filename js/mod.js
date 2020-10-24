@@ -1,40 +1,53 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
-	pointsName: "points",
+	name: "TreeQuest",
+	id: "treequest",
+	author: "smiley",
+	pointsName: "oxygen",
 	discordName: "",
 	discordLink: "",
 	changelogLink: "https://github.com/Acamaeda/The-Modding-Tree/blob/master/changelog.md",
-    offlineLimit: 1,  // In hours
+    offlineLimit: 0,  // In hours
     initialStartPoints: new Decimal (10) // Used for hard resets and new players
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.1",
+	name: "Corridors of Time",
 }
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
+var doNotCallTheseFunctionsEveryTick = ["setCircuit","sumCircuits","resetCircuits","powerCycle","powerBase"]
 
 function getStartPoints(){
     return new Decimal(modInfo.initialStartPoints)
 }
 
+//Part of "power" generation - called by 8 layers so
+function powerCycle(points,layer,efficiency,scaling) { //Given layer's effect on the power cycle
+switch(player[layer].generatorType) {  //Check buyables on M node to determine what generator is where
+	case 1: //Not sure what this will be yet
+		potential_gain = points.add(points.log(1.05))
+		break
+	default:    //This is the standard case, when no generator module is applied
+		potential_gain = points.add(10)
+		break
+	}
+	return potential_gain.mul(efficiency).div(potential_gain.log(scaling))
+}
+
+
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	return hasUpgrade("m", 11)
 }
 
 // Calculate points/sec!
 function getPointGen() {
-	if(!canGenPoints())
+	if(!hasUpgrade("m", 11))
 		return new Decimal(0)
-
-	let gain = new Decimal(1)
+	let gain = new Decimal(upgradeEffect("m", 11))
 	return gain
 }
 
@@ -48,7 +61,9 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+//	return player["p"].total_circuits_repaired.gte(8)
+return true //So I can commit without people playing it
+//return false
 }
 
 
@@ -58,4 +73,17 @@ function isEndgame() {
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
 	return(3600000) // Default is 1 hour which is just arbitrarily large
+}
+
+//Constants for buyable colours (I might put this elsewhere if there's a better place for it)
+const buyableAvailableColour = '#CCCC00'
+const buyableProgressColour = '#00CC00'
+const buyableLockedColour = '#CC0000'
+
+//Function to determine if any of a layer's buyables are owned
+function layerAnyBuyables(layer) {
+	for(buyable in player[layer].buyables) {
+		if(player[layer].buyables[buyable].gt(0)) return true
+	}
+	return false
 }

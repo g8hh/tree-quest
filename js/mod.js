@@ -5,7 +5,7 @@ let modInfo = {
 	pointsName: "oxygen",
 	discordName: "",
 	discordLink: "",
-	changelogLink: "https://github.com/Acamaeda/The-Modding-Tree/blob/master/changelog.md",
+	changelogLink: "https://github.com/IEmory/TreeQuest/blob/master/changelog.md",
     offlineLimit: 0,  // In hours
     initialStartPoints: new Decimal (10) // Used for hard resets and new players
 }

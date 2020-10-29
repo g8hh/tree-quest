@@ -3,6 +3,7 @@ var needCanvasUpdate = true;
 var NaNalert = false;
 var gameEnded = false;
 
+
 // Don't change this
 const TMT_VERSION = {
 	tmtNum: "2.1.3.1",
@@ -277,7 +278,14 @@ function gameLoop(diff) {
 	if (isEndgame() || gameEnded) gameEnded = 1
 
 	if (isNaN(diff)) diff = 0
-//	if (gameEnded && !player.keepGoing) {
+
+		if (!player.beginGame) {
+			diff = 0
+		player.tab = "gameStart"
+	}
+
+
+	//	if (gameEnded && !player.keepGoing) {
 	if (gameEnded) { //Prevent gameplay until ready
 			diff = 0
 		player.tab = "gameEnded"

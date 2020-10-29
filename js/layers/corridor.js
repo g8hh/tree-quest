@@ -21,7 +21,7 @@ addLayer("c1", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c8"],
         requires:() => new Decimal(5), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -43,22 +43,23 @@ addLayer("c1", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                description:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 1</h2><br><br>\n\
+                    A single fluorescent bulb flickers overhead, illuminating the northern section of the corridor. Rubble lines the floor - it seems part of the ceiling has collapsed here.<br><br>\n\
+                    A panel on the north wall controls the overhead ventilation fans. Beside it, lower down, is an auxiliary power cable - it should provide enough charge to power one system.<br><br>\n\
+                    A filing cabinet, once inside the maintenance room, lies on the floor, its contents spilled out."
                 }
-            }
-       },
-       buyables: {
+            }]
+        ],
+
+
+        upgrades: {},
+
+        buyables: {
         rows:2,
         cols:3,
         11: {
@@ -279,10 +280,7 @@ addLayer("c1", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked
@@ -318,7 +316,7 @@ addLayer("c2", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c1"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -340,21 +338,20 @@ addLayer("c2", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 2</h2><br><br>\n\
+                    The northeast corner of the corridor is in quite poor condition. The floor has been torn up in places and your footing is uneven.<br><br>\n\
+                    There's a massive hole in the ventilation pipe running above the northern corridors. It's not large enough to climb into, but you could reach up or feed something through.<br><br>\n\
+                    The garbage disposal unit on the eastern wall has seen better days, but should still operate in theory."
                 }
-            }
-       },
+            }]
+        ],
+        
+        upgrades: {},
        buyables: {
         rows:2,
         cols:2,
@@ -435,7 +432,7 @@ addLayer("c2", {
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
                     buyablePct = player[this.layer].buyables[this.id].div(6).mul(100)
-                    if(player["m"].buyables[33].eq(0)) buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
+                    if(player["m"].buyables[33].eq(0) && player["p"].c2_unpowered_collision.eq(0)) buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c2_wires_fed.eq(1)) return {
                         'background-color': buyableProgressColour
@@ -547,10 +544,7 @@ addLayer("c2", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked
@@ -586,7 +580,7 @@ addLayer("c3", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c2"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -608,21 +602,20 @@ addLayer("c3", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 3</h2><br><br>\n\
+                    The eastern side of the corridor has been mostly untouched by the incident. There are superficial issues with the walls but nothing compromising.<br><br>\n\
+                    The ground level vent in the east wall looks to be in decent condition.<br><br>\n\
+                    The key reprogrammer terminal has fallen against the inner wall. It's on its side but still seems to be functioning perfectly."
                 }
-            }
-       },
+            }]
+        ],
+
+        upgrades: {},
        buyables: {
         rows:2,
         cols:2,
@@ -795,10 +788,7 @@ addLayer("c3", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked
@@ -834,7 +824,7 @@ addLayer("c4", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c3"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -856,21 +846,19 @@ addLayer("c4", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 4</h2><br><br>\n\
+                    The southeast corner of the corridor has suffered massive structural damage. The wall has crumbled away, revealing exposed, sparking wires.<br><br>\n\
+                    A circuit board ordinarily obscured by a panel is exposed as well - perhaps you can salvage something from it."
                 }
-            }
-       },
+            }]
+        ],
+
+        upgrades: {},
        buyables: {
         rows:2,
         cols:2,
@@ -1032,10 +1020,7 @@ addLayer("c4", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked
@@ -1070,7 +1055,7 @@ addLayer("c5", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c4"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1092,21 +1077,19 @@ addLayer("c5", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 5</h2><br><br>\n\
+                    One of the overhead bulbs blinks out intermittently, distracting your eye. Otherwise, this section of corridor is quite intact.<br><br>\n\
+                    An electronic supply closet lies on the floor. Presumably someone was working here recently, before the incident."
                 }
-            }
-       },
+            }]
+        ],
+
+        upgrades: {},
        buyables: {
         rows:2,
         cols:2,
@@ -1278,10 +1261,7 @@ addLayer("c5", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked
@@ -1317,7 +1297,7 @@ addLayer("c6", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c5"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1339,21 +1319,19 @@ addLayer("c6", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 6</h2><br><br>\n\
+                    Many of the maintenance terminals in this section have been damaged - one in particular lies open, its innards exposed.<br><br>\n\
+                    The filtration system seems to be functional, and garbage control looks intact, though it would need additional power to function. All other systems are offline."
                 }
-            }
-       },
+            }]
+        ],
+
+        upgrades: {},
        buyables: {
         rows:2,
         cols:3,
@@ -1579,10 +1557,7 @@ addLayer("c6", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked
@@ -1618,7 +1593,7 @@ addLayer("c7", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c6"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1640,21 +1615,19 @@ addLayer("c7", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 7</h2><br><br>\n\
+                    The outer wall of the corridor is beginning to cave in, but it seems stable for the time being. The ground level vent and its override controls are still accessible, at a stretch.<br><br>\n\
+                    There's an auxiliary power socket near the section to the south, that looks to still be in working order."
                 }
-            }
-       },
+            }]
+        ],
+
+        upgrades: {},
        buyables: {
         rows:2,
         cols:2,
@@ -1827,10 +1800,7 @@ addLayer("c7", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked
@@ -1866,7 +1836,7 @@ addLayer("c8", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#DDDD44",
         branches: ["c7"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1888,21 +1858,19 @@ addLayer("c8", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 1,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unlocked() { return player[this.layer].unlocked }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
+
+        topsection: [
+            ['display-text', function() {
+                if(player.p.chapter=="prologue") {
+                    //Flavour text before life support repaired
+                    return "<h2>CORRIDOR 8</h2><br><br>\n\
+                    The source  of the atmospheric issues seems to be here. Toxic air is seeping in through the ventilation system, which is still pumping the fumes in despite the lack of power.<br><br>\n\
+                    Whoever was here before you was trying to crack the lock on the filtration circuit box, but it looks like they fled or worse before they had a chance to finish the job."
                 }
-            }
-       },
+            }]
+        ],
+
+        upgrades: {},
        buyables: {
         rows:2,
         cols:2,
@@ -2064,10 +2032,7 @@ addLayer("c8", {
             return
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
-        hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
-        ],
+        hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
         tooltip() { // Optional, tooltip displays when the layer is unlocked

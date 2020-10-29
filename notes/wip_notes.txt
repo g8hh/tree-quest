@@ -1,45 +1,6 @@
-THE "P" LAYER
-
-(1) Viewable Information
- Currently the "P" layer is used as a mass storage area for gameplay variables ("Progress"). It should also have its own uses:
- - Inventory: A view of any items that have been picked up (including Fuses, oxygen tanks, and keys)
- - Story: An overview of the story so far
- - Challenges: If I decide to put them in, a list of "challenges" or achievements that can be attempted throughout the run
-
-
-PROLOGUE CHANGES STILL TO COMPLETE:
-
-(2) Information Display:
- It should be possible to see some information in a couple of places:
- - The current and total amount of Fuses should be visible on the "M" layer once at least one Fuse is owned [COMPLETE]
- - The current and total oxygen tanks should also be displayed on the "M" layer, as this is where oxygen is refilled.
-
-
-(4) Story and Descriptions:
- Currently there is no guidance on any of the layers. This removes an element of immersion, but most importantly makes C1 through C8 FUCKING BORING.
- - Each layer should have a section for text that will describe the area. This will also offer some additional guidance, especially in the case of the "M" layer.
-
- M layer:
- - pre-fusebox
- - post-fusebox
- C1 layer:
- - pre-fusebox
- - post-fusebox
- C2 layer
- C3 layer
- C4 layer
- C5 layer
- C6 layer
- C7 layer
- C8 layer
-
-(5) Intro Screen:
- As this plays differently from most Prestige Tree mods, it would be appropriate to have a start/disclaimer screen before beginning the run.
- - The endgame screen could be repurposed for this, or a similar screen created.
-
-(6) Help Layer:
- Implement a side layer named "H" to contain help documents
-
+TO DO BEFORE PROLOGUE RELEASE:
+NOTHING????
+================================================================
 
 "CHAPTER 1" CHANGES TO COMPLETE
 

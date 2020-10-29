@@ -1,7 +1,7 @@
 let modInfo = {
 	name: "TreeQuest",
 	id: "treequest",
-	author: "smiley",
+	author: "smiley#0443",
 	pointsName: "oxygen",
 	discordName: "",
 	discordLink: "",
@@ -13,12 +13,12 @@ let modInfo = {
 // Set your version in num and name
 let VERSION = {
 	num: "0.1",
-	name: "Corridors of Time",
+	name: "Corridors of Time [PROLOGUE]",
 }
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["setCircuit","sumCircuits","resetCircuits","powerCycle","powerBase"]
+var doNotCallTheseFunctionsEveryTick = ["setCircuit","sumCircuits","resetCircuits","powerCycle","powerBase","formattedInventory","formattedStory","formattedChallenges"]
 
 function getStartPoints(){
     return new Decimal(modInfo.initialStartPoints)
@@ -61,9 +61,9 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-//	return player["p"].total_circuits_repaired.gte(8)
-return true //So I can commit without people playing it
-//return false
+	// return true // So I can commit without people playing it
+	// return false // So I can test
+	return (player.p.chapter == "Chapter 1")
 }
 
 
@@ -76,9 +76,9 @@ function maxTickLength() {
 }
 
 //Constants for buyable colours (I might put this elsewhere if there's a better place for it)
-const buyableAvailableColour = '#CCCC00'
-const buyableProgressColour = '#00CC00'
-const buyableLockedColour = '#CC0000'
+const buyableAvailableColour = '#CFEC23'
+const buyableProgressColour = '#19FC3D'
+const buyableLockedColour = '#bf8f8f'
 
 //Function to determine if any of a layer's buyables are owned
 function layerAnyBuyables(layer) {
@@ -86,4 +86,10 @@ function layerAnyBuyables(layer) {
 		if(player[layer].buyables[buyable].gt(0)) return true
 	}
 	return false
+}
+
+//Function to begin game
+function beginGame() {
+	player.beginGame = true;
+	showTab("tree")
 }

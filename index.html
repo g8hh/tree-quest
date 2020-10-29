@@ -17,6 +17,7 @@
 
 	<!-- Interior layers -->
 	<script type="text/javascript" src="js/layers/interior.js"></script>
+	<script type="text/javascript" src="js/layers/doorways.js"></script>
 
 	<script type="text/javascript" src="js/temp.js"></script>
 	<script type="text/javascript" src="js/game.js"></script>
@@ -30,26 +31,36 @@
 		<div v-if="false" id="loadingSection" class="fullWidth">
 			<h1>Loading... (If this takes too long it means there was a serious error!)</h1>
 		</div>
-		<div class="vl" v-if="player.tab!='tree'&&player.tab!='gameEnded'"></div>
+		<div class="vl" v-if="player.tab!='tree'&&player.tab!='gameEnded'&&player.tab!='gameStart'"></div>
+		<div v-if="player.tab=='gameStart'" class="fullWidth">
+			<br>
+			<h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>
+			<h2>This should be considered a prologue/demo - there's a fixed amount of gameplay.</h2>
+			<h3>This mod is closer in parts to an adventure/puzzle game than an incremental. (As it stands, there are no incremental features yet)</h3><br>
+			<h3>There's no offline progress, and early parts of the game are time-sensitive.</h3><br>
+			<h3>Hopefully the gameplay is intuitive. If not, check the Help (H) layer, or press H on the keyboard, for assistance.</h3><br><br>
+			<br>
+			<button class="longUpg can" onclick="beginGame()">Begin</button>
+		</div>
+
 		<div v-if="player.tab=='gameEnded'" class="fullWidth">
 			<br>
 			<h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>
-			<h3>If you're seeing this, you're too early. Go away.</h3><br>
-			<h3>When there's content ready I'll let you know.</h3><br><br>
+			<h3>You've reached the end of the "prologue".</h3><br>
+			<h3>The next layers aren't properly implemented so you can't "keep going", but you're welcome to play again.</h3><br><br>
+			<h3 v-if="player.p.tanks.eq(3)">If you didn't already, try completing the game with only two oxygen tanks! You'll have to be a little creative to manage it in time.</h3>
+			<h3 v-if="player.p.tanks.eq(2)">Congrats on skipping one of the oxygen tanks! Did you do so intentionally?</h3><br><br>
 			<div v-if="!player.timePlayedReset">It took you {{formatTime(player.timePlayed)}} to beat the game.</div>
-			<div v-if="player.timePlayedReset">Make sure that you record the time in your stream or else your speedrun won't count!</div>
 			<br>
-			<!--<button class="longUpg can" onclick="hardReset(true)">Play Again</button>&nbsp;&nbsp;&nbsp;&nbsp;<!--<button class="longUpg can" onclick="keepGoing()">Keep Going</button>-->
+			<button class="longUpg can" onclick="hardReset(true)">Play Again</button>&nbsp;&nbsp;&nbsp;&nbsp;<!--<button class="longUpg can" onclick="keepGoing()">Keep Going</button>-->
 			<br><br><br>
 			<span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
 			<a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
 			<a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a><br>
-			<br><br>
-			If you would like to speedrun this, too bad.
-			<br><br><br>
-			<h1>Oh, you are still reading this?</h1>
 			<br>
 		</div>
+
+
 		<div v-if="player.tab=='changelog'" class="col right">
 			<button class="back" onclick="showTab('tree')">←</button><br><br><br>
 			Changelog
@@ -106,7 +117,7 @@
 				</tr> 
 			</table>
 		</div>
-		<div id="treeOverlay" class="treeOverlay" v-if="player.tab!='gameEnded'" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.tab == 'tree', col: player.tab != 'tree', left: player.tab != 'tree'}">
+		<div id="treeOverlay" class="treeOverlay" v-if="player.tab!='gameEnded' && player.tab!='gameStart'" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.tab == 'tree', col: player.tab != 'tree', left: player.tab != 'tree'}">
 			<div id="version" class="overlayThing" style="margin-right: 13px">{{VERSION.withoutName}}</div>
 			<img id="optionWheel"  class="overlayThing" v-if="player.tab!='options'" src="options_wheel.png" onclick="showTab('options')"></img>
 			<div id="info" v-if="player.tab!='info'"  class="overlayThing" onclick="showTab('info')"><br>i</div>
@@ -142,7 +153,7 @@
 		</div>
 
 
-		<div id="treeTab" style="z-index: 0" v-if="player.tab!='gameEnded'" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.tab == 'tree', col: player.tab != 'tree', left: player.tab != 'tree'}">
+		<div id="treeTab" style="z-index: 0" v-if="player.tab!='gameEnded' && player.tab!='gameStart'" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.tab == 'tree', col: player.tab != 'tree', left: player.tab != 'tree'}">
 			<br><br><br><br>
 			<div id="fakeHead" style="visibility: hidden;">
 				<span v-if="player.devSpeed && player.devSpeed != 1" class="overlayThing">
@@ -165,45 +176,69 @@
 			<!-- *************************** Modify the tree in the table below - because I need to draw maps like a special snowflake *************************** -->
 
 			<table>
-				<td><layer-node layer='i1' abb='I1'></layer-node></td>
+				<td><layer-node layer='is' abb='SM'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
-				<td><layer-node layer='i2' abb='I2'></layer-node></td>
+				<td><layer-node layer='nd' abb='ND'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
-				<td><layer-node layer='i3' abb='I3'></layer-node></td>
+				<td><layer-node layer='i3' abb='AW3'></layer-node></td>
 			</table><table>
 				<td><button class="treeNode hidden"></button></td>
 			</table>
 
 
 			<table>
+				<td><layer-node layer='i2' abb='AW2'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c8' abb='C8'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c1' abb='C1'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c2' abb='C2'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='in' abb='NI'></layer-node></td>
 			</table><table>
 				<td><button class="treeNode hidden"></button></td>
 			</table>
 
 			<table>
+				<td><layer-node layer='wd' abb='WD'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c7' abb='C7'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='m' abb='M'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c3' abb='C3'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='ed' abb='ED'></layer-node></td>
 			</table><table>
 				<td><button class="treeNode hidden"></button></td>
 			</table>
 
 			<table>
+				<td><layer-node layer='ia' abb='A'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c6' abb='C6'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c5' abb='C5'></layer-node></td>
 				<td><button class="treeNode hidden"></button></td>
 				<td><layer-node layer='c4' abb='C4'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='i4' abb='AW4'></layer-node></td>
 			</table><table>
 				<td><button class="treeNode hidden"></button></td>
 			</table>
+
+			<table>
+				<td><layer-node layer='i1' abb='AW1'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='nd' abb='ND'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='ih' abb='H'></layer-node></td>
+			</table><table>
+				<td><button class="treeNode hidden"></button></td>
+			</table>
+
+
 			<canvas id="treeCanvas" class="canvas"></canvas>
 		</div>
 		<div v-for="layer in LAYERS" >

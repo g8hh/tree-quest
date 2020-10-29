@@ -11,7 +11,7 @@ addLayer("p", {
         layer: "p", 
         name: "Progress Layer", // This is a hidden, inaccessible layer, used for tracking quest progress
         startData() { return {
-            unl: true,
+            unlocked: true,
             points: new Decimal(0),
             best: new Decimal(0),
             total: new Decimal(0),
@@ -74,12 +74,6 @@ addLayer("p", {
 
         //Helper functions for above storage
 
-        tabFormat: {
-            "tab 1": {
-                content: [['display-text', 'sample']],
-            }
-        },
-
         maxOxygen() { //Returns the maximum amount of oxygen based on current total of tanks
             return player[this.layer].tanks.mul(10) //For now, base 10 seconds per tank
         },
@@ -113,11 +107,77 @@ addLayer("p", {
             layers[this.layer].sumCircuits()
         },
 
+
+        //Inventory formatting function
+        formattedInventory() {
+            inventoryArray = []
+
+            //Oxygen tanks
+            inventoryArray.push(['display-text', '<h2>Inventory</h2><br><br>You possess the following:<br>'])
+            if (player.p.tanks.gt(0)) inventoryArray.push(['display-text', player.p.tanks + ' oxygen tanks, granting ' + formatWhole(layers.p.maxOxygen()) + ' seconds of exploration time.'])
+            if (player.p.fuses.add(player.p.spent_fuses).gt(0)) inventoryArray.push(['display-text', player.p.fuses.add(player.p.spent_fuses) + ' fuses, ' + (player.p.fuses.eq(0)?'all ':'') + player.p.spent_fuses + ' of which are in use.'])
+            if (player.p.c8_reprogrammer_taken.eq(1)) inventoryArray.push(['display-text', 'A handheld lock scanning device, only usable within the central corridor.'])
+
+            return inventoryArray
+        },
+
+        formattedChallenges() {
+            challengesArray = []
+
+            challengesArray.push(['display-text', '<h2>Challenges</h2><br>'])
+
+            return challengesArray
+        },
+
+
+        //Microtabs - for use with Story
+        microtabs: {
+            "Story": {
+                "Introduction": {
+                    content: [["display-text", "<br><h2>Introduction</h2><br><br>\n\
+                    \"Quality maintenance is hard to find around there.\" That's apparently all the explanation HQ thought you needed, before shipping you off to a planet you'd never even heard of.\n\
+                    Six days later, your ship arrived nose-first a couple of miles from the site after a close shave with an asteroid belt. It's in no state to fly any time soon, but this is a year-long assignment, so you weren't too concerned.\n\
+                    You made your way to your residence- and workplace-to-be.<br><br>\n\
+                    After checking in past the guards, and changing out of your flight suit into your maintenance overalls, the receptionist sent you straight to the service elevator, to check in with the onsite officer in the basement office.. No introduction, no explanation as to where you were or what this company even did.\n\
+                    You thought you noticed a hint of urgency in her voice - maybe climate control in the boardroom was on the fritz.<br><br>\n\
+                    As the elevator descended, what sounded like a rather concerning explosion shook the building. As it approached the bottom,  an odd smell filled the air and it became harder and harder for you to breathe.\n\
+                    Pulling your shirt up over your mouth, you darted out of the elevator the moment it reached the bottom. Toxic fumes were billowing into the room, and rubble was everywhere. Anyone who was working down here had presumably managed to flee before the explosion hit.\n\
+                    You managed to dive into the maintenance office - which, mercifully, still had clean air inside it - and seal the door behind you, before passing out.<br><br>\n\
+                    When you came to, you surveyed the room. Most of the systems were offline, but a diagnostic panel was still functioning. From that you got a basic sense of the situation: power and life support to the building had failed after some kind of impact or explosion, and only basic systems were online.\n\
+                    The entirety of the staff had evacuated, leaving you alone in a facility you'd arrived at today...assuming this was even still the same day. To make matters worse, the facility had automatically locked the basement down to contain the issue, and without power lifting the blast doors would be impossible. You were trapped down here.<br><br>\n\
+                    Waiting seemed pointless, so you took a look through the schematics in the room. It looks as though the corridor surrounding this room houses the life support system - and if you could get that back online, you'd be able to set up some power generation from the components here.\n\
+                    You managed to piece together a basic respirator, and found a portable air tank you could take with you. It'd only let you stay out for a few moments but it should be enough to start working on repairs. Better than waiting for a rescue that might never come."]]
+                },
+                "Prologue": {
+                    content: [["display-text", "prologue story gaming"]],
+                    unlocked() { return false } // To write this once the prologue is passable
+                }
+            }
+        },
+
+        //Tab layout
+        tabFormat: {
+            "Inventory": {
+                content: function() {return layers.p.formattedInventory()},
+            },
+            "Story": {
+                content: [
+                    ["display-text","<h2>Story</h2>"],
+                    ["microtabs", "Story"]
+                ],
+            },
+/* Excluded because with no post-prologue content there's no need for challenges
+            "Challenges": {
+                content: function() {return layers.p.formattedChallenges()},
+            }
+*/
+        },
+
         //Default functions, unknown if these are necessary
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#4B63DC",
         requires:() => new Decimal(0), // Can be a function that takes requirement increases into account
         resource: "prestige points", // Name of prestige currency
         baseResource: "points", // Name of resource prestige is based on
@@ -140,42 +200,7 @@ addLayer("p", {
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
         },
-        upgrades: {
-            rows: 1,
-            cols: 3,
-            11: {
-                title:() => "Point Generation",
-                desc:() => "Gain points every second.",
-                cost:() => new Decimal(1),
-                unl() { return player[this.layer].unl }, // The upgrade is only visible when this is true
-                effect() {
-                    let ret = 1
-                    if(player[this.layer].upgrades.includes(13)) ret = player[this.layer].acceleration
-                    return ret;
-                }
-            },
-            12: {
-                desc:() => "Point generation is faster based on your unspent Prestige Points.",
-                cost:() => new Decimal(1),
-                unl() { return (hasUpgrade(this.layer, 11))},
-                effect() { // Calculate bonuses from the upgrade. Can return a single value or an object with multiple values
-                    let ret = player[this.layer].points.add(2).pow(player[this.layer].upgrades.includes(24)?1.1:(player[this.layer].upgrades.includes(14)?0.75:0.5)) 
-                    if (ret.gte("1e20000000")) ret = ret.sqrt().times("1e10000000")
-                    return ret;
-                },
-                effectDisplay(fx) { return format(fx)+"x" }, // Add formatting to the effect
-            },
-            13: {
-                title:() => "Point Acceleration",
-                desc:() => "The first upgrade increases points by Acceleration instead of by 1.",
-                cost:() => new Decimal(5),
-                unl() {return (hasUpgrade(this.layer, 12))},
-                effect() {
-                    let ret = player[this.layer].acceleration;
-                    return ret;
-                }
-            }
-       },
+        upgrades: {},
         doReset(resettingLayer){
             //never resets lmao
         },
@@ -195,30 +220,12 @@ addLayer("p", {
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
         hotkeys: [
-            {key: "p", desc: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unl) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, desc: "Ctrl+c: respec things", onPress(){if (player[this.layer].unl) respecBuyables(this.layer)}},
+            {key: "p", description: "P: open Personal menu", onPress(){player.tab = "p"}},
         ],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        microtabs: {
-            stuff: {
-                first: {
-                    content: ["upgrades", ["display-text", function() {return "confirmed"}]]
-                },
-                second: {
-                    content: [["upgrade", 11],
-                            ["row", [["upgrade", 11], "blank", "blank", ["upgrade", 11],]],
-                        
-                        ["display-text", function() {return "double confirmed"}]]
-                },
-            },
-            otherStuff: {
-                // There could be another set of microtabs here
-            }
-        },
-
         tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
+            let tooltip = "Personal"
             return tooltip
         },
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.

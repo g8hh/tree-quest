@@ -11,7 +11,7 @@ addLayer("m", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color:() => "#77bf5f",
 
 //        unlocked() { return player.points.gt(5) },
 
@@ -53,12 +53,24 @@ addLayer("m", {
 
         topsection: [
             ['display-text', function() {
-                return "Life support in the majority of the facility has failed. You were the poor sap they sent to check out the fault, and whilst you were down here, it gave out entirely.\n\
-                Most of the facility has locked down to buy time for the occupants to evacuate, so you're unable to leave the area.<br><br>\n\
-                Fortunately, you've managed to barricade yourself in the maintenance room, where the surplus oxygen is stored.\n\
-                There's a small oxygen tank in the room. With that, it should be possible to venture outside, if only for a few seconds at a time before returning to fill up again.<br><br>\n\
-                Unfortunately, the power is also out in most of the surrounding corridor, making it impossible to see, much less use most of the systems. A single light illuminates the north part of the ring.\n\
-                If you can get into the fuse box you may be able to move the light around and explore...and with a little luck, finally repair the life support systems."
+                if(player.p.chapter=="prologue") {
+                    //Start of game - maintenance before finding the fusebox
+                    if(player.p.key_fusebox.eq(0)) return "<h2>MAINTENANCE</h2><br><br>\n\
+                    Life support in the majority of the facility has failed. You were the poor sap they sent to check out the fault, and whilst you were down here, it gave out entirely.\n\
+                    Most of the facility has locked down to buy time for the occupants to evacuate, so you're unable to leave the area.<br><br>\n\
+                    Fortunately, you've managed to barricade yourself in the maintenance room, where the surplus oxygen is stored.\n\
+                    There's a small oxygen tank in the room. With that, it should be possible to venture outside, if only for a few seconds at a time before returning to fill up again.<br><br>\n\
+                    Unfortunately, the power is also out in most of the surrounding corridor, making it impossible to see, much less use most of the systems. A single light illuminates the north part of the ring.\n\
+                    If you can get into the fuse box you may be able to move the light around and explore...and with a little luck, finally repair the life support systems."
+                    
+                    //Prologue after opening the fusebox
+                    else return "<h2>MAINTENANCE</h2><br><br>\n\
+                    Life support in the majority of the facility has failed. You were the poor sap they sent to check out the fault, and whilst you were down here, it gave out entirely.\n\
+                    Most of the facility has locked down to buy time for the occupants to evacuate, so you're unable to leave the area.<br><br>\n\
+                    Fortunately, you've managed to barricade yourself in the maintenance room, where the surplus oxygen is stored.\n\
+                    There's a small oxygen tank in the room. With that, it should be possible to venture outside, if only for a few seconds at a time before returning to fill up again.<br><br>\n\
+                    Now you have the key to the fusebox, you can power other sections of the corridor. Hopefully you can find more fuses, and repair the life support system."
+                }
             }]
         ],
 
@@ -142,7 +154,8 @@ addLayer("m", {
                 unlocked() { return player["p"].chapter == "prologue" && player.points.gte(layers["p"].maxOxygen()) && player["p"].total_circuits_repaired.eq(8)}, // The upgrade is only visible when this is true
                 effect() {
                     if(hasUpgrade(this.layer, 13)) {
-                        player["p"].tanks = new Decimal(3) //Sanity check - it's possible to skip a tank, this gives it back (to expand to give achievement/recognition)
+                        // Commented out below line to allow for prologue checking
+                        // player["p"].tanks = new Decimal(3) //Sanity check - it's possible to skip a tank, this gives it back (to expand to give achievement/recognition)
                         player["p"].chapter = "Chapter 1"
                     }
                 },
@@ -214,7 +227,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -262,7 +275,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -309,7 +322,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -356,7 +369,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -426,7 +439,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -475,7 +488,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -524,7 +537,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -571,7 +584,7 @@ buyables: {
                 },
                 style() {
                     if(player[this.layer].buyables[this.id].eq(1)) return {
-                        'background-color': '#CCCC33'
+                        'background-color': '#CFBC23'
                     }
                     if(player["p"].fuses.eq(0)) return {
                         'background-color': '#442222',
@@ -740,8 +753,7 @@ buyables: {
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
         hotkeys: [
-            {key: "p", description: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-            {key: "ctrl+c" + this.layer, description: "Ctrl+c: respec things", onPress(){if (player[this.layer].unlocked) respecBuyables(this.layer)}},
+            {key: "m", description: "M: Return to the Maintenance room", onPress(){player.tab = "m"}},
         ],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 

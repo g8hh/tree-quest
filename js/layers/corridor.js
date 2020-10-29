@@ -13,8 +13,8 @@ addLayer("c1", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},
@@ -308,8 +308,8 @@ addLayer("c2", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},
@@ -572,8 +572,8 @@ addLayer("c3", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},
@@ -816,8 +816,8 @@ addLayer("c4", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},
@@ -1047,8 +1047,8 @@ addLayer("c5", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},
@@ -1289,8 +1289,8 @@ addLayer("c6", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},
@@ -1585,8 +1585,8 @@ addLayer("c7", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},
@@ -1828,8 +1828,8 @@ addLayer("c8", {
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
-            best: new Decimal(0),
-            total: new Decimal(0),
+            
+            
             generatorType: 0,
             buyables: {}, // You don't actually have to initialize this one
         }},

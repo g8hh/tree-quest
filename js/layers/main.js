@@ -757,10 +757,9 @@ buyables: {
         ],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
         }

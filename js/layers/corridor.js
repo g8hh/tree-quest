@@ -9,7 +9,7 @@
 //
 addLayer("c1", {
         layer: "c1", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 01", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 1", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -283,10 +283,9 @@ addLayer("c1", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             
@@ -304,7 +303,7 @@ addLayer("c1", {
 //
 addLayer("c2", {
         layer: "c2", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 02", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 2", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -547,10 +546,9 @@ addLayer("c2", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             
@@ -568,7 +566,7 @@ addLayer("c2", {
 //
 addLayer("c3", {
         layer: "c3", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 03", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 3", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -791,10 +789,9 @@ addLayer("c3", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             
@@ -812,7 +809,7 @@ addLayer("c3", {
 //
 addLayer("c4", {
         layer: "c4", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 04", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 4", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -1023,10 +1020,9 @@ addLayer("c4", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             
@@ -1043,7 +1039,7 @@ addLayer("c4", {
 //
 addLayer("c5", {
         layer: "c5", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 05", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 5", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -1264,10 +1260,9 @@ addLayer("c5", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             
@@ -1285,7 +1280,7 @@ addLayer("c5", {
 //
 addLayer("c6", {
         layer: "c6", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 06", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 6", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -1560,10 +1555,9 @@ addLayer("c6", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             
@@ -1581,7 +1575,7 @@ addLayer("c6", {
 //
 addLayer("c7", {
         layer: "c7", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 07", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 7", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -1803,10 +1797,9 @@ addLayer("c7", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+        
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             
@@ -1824,7 +1817,7 @@ addLayer("c7", {
 //
 addLayer("c8", {
         layer: "c8", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Corridor 08", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Corridor 8", // This is optional, only used in a few places, If absent it just uses the layer id.
         startData() { return {
             unlocked: false,
             points: new Decimal(0),
@@ -2035,10 +2028,9 @@ addLayer("c8", {
         hotkeys: [],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 
-        tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
-        },
+        tooltip() { return layers[this.layer].name },
+        tooltipLocked() { return layers[this.layer].name },
+
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
                          // Layer will automatically highlight if an upgrade is purchasable.
             

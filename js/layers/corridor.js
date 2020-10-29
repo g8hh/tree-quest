@@ -509,7 +509,7 @@ addLayer("c2", {
                 } else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].lt(3) && player["p"].c1_fan_disabled.eq(0) && player["m"].buyables[33].eq(1)) { //C4 powered on, live wires touch fan
-                        player.points = player.points.sub(3) //Reduce oxygen due to lost breath
+                        player.points = player.points.sub(1) //Reduce oxygen due to lost breath
                         player[this.layer].buyables[12] = new Decimal(0) //Cancel action
                         player["p"].c2_failed_completion = new Decimal(1) //Flag for failure text to appear
                     } else if(player[this.layer].buyables[12].lt(2) && player["p"].c1_fan_disabled.eq(0) && player["m"].buyables[33].eq(0) && player["p"].c2_unpowered_collision.eq(0)) { //C4 powered off, unpowered wires touch fan

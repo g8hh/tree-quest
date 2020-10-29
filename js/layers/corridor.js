@@ -1636,11 +1636,11 @@ addLayer("c7", {
                 },
                 display() { // Everything else displayed in the buyable button after the title
                     displaytext = "(3 seconds)\n\
-                    Open the electromagnetic vents on either side of the corridor."
+                    Open the electromagnetic vents in the corridors east and west of the maintenance room."
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c7_vents_open.eq(1)) return "The vents are now open."
+                    if(player["p"].c7_vents_open.eq(1)) return "The vents in Corridors 3 and 7 are now open."
                     return displaytext
                 },
                 unlocked() { return player["p"].chapter == "prologue" && player["p"].c3_tank_retrieved.eq(0) },

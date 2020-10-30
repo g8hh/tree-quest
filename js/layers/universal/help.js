@@ -85,7 +85,7 @@ tabFormat: {
     "Oxygen": {
         content: [
             ["display-text", "<h2>Oxygen</h2><br><br><p>Your primary resource in this game is your oxygen level. This number is an abstraction that represents the number of seconds you can spend outside the safe zone (whilst still allowing for you to return to safety afterwards).</p><br>\n\
-            <p>When you venture out of safety and perform tasks, the oxygen level will decrease. Once it hits zero, you will be returned to the safe zone, where your oxygen will automatically refill.</p><br>\n\
+            <p>When you venture out of safety and perform tasks, the oxygen level will decrease. Once it hits zero, you will need to return to the safe zone, where your oxygen will automatically refill.</p><br>\n\
             <p>You start the game with one oxygen tank, granting you a total of ten seconds' venturing time. Finding additional tanks will increase this limit. [Eventually,] you may have the option to improve its efficiency.</p>"],
         ],
     },

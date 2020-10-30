@@ -12,8 +12,8 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.1",
-	name: "Corridors of Time [PROLOGUE]",
+	num: "0.1.1",
+	name: "Deathproof [PROLOGUE]",
 }
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
@@ -40,13 +40,12 @@ switch(player[layer].generatorType) {  //Check buyables on M node to determine w
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return hasUpgrade("m", 11)
+	return hasUpgrade("m", 11) && player.points.gt(0)
 }
 
 // Calculate points/sec!
 function getPointGen() {
-	if(!hasUpgrade("m", 11))
-		return new Decimal(0)
+	if(!hasUpgrade("m", 11)) return new Decimal(0)
 	let gain = new Decimal(upgradeEffect("m", 11))
 	return gain
 }
@@ -57,6 +56,7 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+	function() { if(player.points.lte(0)) return "<span style='color: red'>You are out of oxygen - return to the Maintenance room!</span>"}
 ]
 
 // Determines when the game "ends"

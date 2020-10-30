@@ -86,6 +86,7 @@ addLayer("c1", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(2).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     return {
@@ -119,6 +120,7 @@ addLayer("c1", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(1).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c1_holding_cable.eq(1)) return {
@@ -160,6 +162,7 @@ addLayer("c1", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c1_fan_disabled.eq(1)) return {
@@ -195,6 +198,7 @@ addLayer("c1", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[1].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[1].eq(1)) return {
@@ -216,7 +220,7 @@ addLayer("c1", {
         update(diff) {
             if(player["p"].chapter == "prologue") {
                 if(player["p"].key_fusebox.eq(1) && player.m.buyables[12].eq(0)) player[this.layer].unlocked = false
-                else player[this.layer].unlocked = hasUpgrade("m",11)
+                else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
                 //Effect countdown for buyable 11
                 if(player[this.layer].buyables[11].gt(0)) {
@@ -382,6 +386,7 @@ addLayer("c2", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(2).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -430,6 +435,7 @@ addLayer("c2", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(6).mul(100)
                     if(player["m"].buyables[33].eq(0) && player["p"].c2_unpowered_collision.eq(0)) buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
@@ -466,6 +472,7 @@ addLayer("c2", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[2].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[2].eq(1)) return {
@@ -486,7 +493,7 @@ addLayer("c2", {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
             if(player.m.buyables[13].eq(0)) player[this.layer].unlocked = false
-            else player[this.layer].unlocked = hasUpgrade("m",11)
+            else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
 
             //Effect countdown for buyable 11
@@ -645,6 +652,7 @@ addLayer("c3", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(2).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -684,6 +692,7 @@ addLayer("c3", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(6).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c3_lock_analysed.eq(1)) return {
@@ -719,6 +728,7 @@ addLayer("c3", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[3].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[3].eq(1)) return {
@@ -739,7 +749,7 @@ addLayer("c3", {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
             if(player.m.buyables[23].eq(0)) player[this.layer].unlocked = false
-            else player[this.layer].unlocked = hasUpgrade("m",11)
+            else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
             //Effect countdown for buyable 11
             if(player[this.layer].buyables[11].gt(0)) {
@@ -881,6 +891,7 @@ addLayer("c4", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -913,6 +924,7 @@ addLayer("c4", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(2).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c4_loose_wires.eq(1)) return {
@@ -948,6 +960,7 @@ addLayer("c4", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[4].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[4].eq(1)) return {
@@ -968,7 +981,7 @@ addLayer("c4", {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
             if(player.m.buyables[33].eq(0)) player[this.layer].unlocked = false
-            else player[this.layer].unlocked = hasUpgrade("m",11)
+            else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
             //Effect countdown for buyable 11
             if(player[this.layer].buyables[11].gt(0)) {
@@ -1111,6 +1124,7 @@ addLayer("c5", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c5_tamper_bypassed.eq(1)) return {
@@ -1157,6 +1171,7 @@ addLayer("c5", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1189,6 +1204,7 @@ addLayer("c5", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[5].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[5].eq(1)) return {
@@ -1209,7 +1225,7 @@ addLayer("c5", {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
             if(player.m.buyables[32].eq(0)) player[this.layer].unlocked = false
-            else player[this.layer].unlocked = hasUpgrade("m",11)
+            else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
             //Effect countdown for buyable 11
             if(player[this.layer].buyables[11].gt(0)) {
@@ -1354,6 +1370,7 @@ addLayer("c6", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1399,6 +1416,7 @@ addLayer("c6", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c6_diagnostic_run.eq(1)) return {
@@ -1439,6 +1457,7 @@ addLayer("c6", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c6_filter_override.eq(1)) return {
@@ -1474,6 +1493,7 @@ addLayer("c6", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[6].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[6].eq(1)) return {
@@ -1494,7 +1514,7 @@ addLayer("c6", {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
             if(player.m.buyables[31].eq(0)) player[this.layer].unlocked = false
-            else player[this.layer].unlocked = hasUpgrade("m",11)
+            else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
             //Effect countdown for buyable 11
             if(player[this.layer].buyables[11].gt(0)) {
@@ -1652,6 +1672,7 @@ addLayer("c7", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(3).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c7_vents_open.eq(1)) return {
@@ -1692,6 +1713,7 @@ addLayer("c7", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(2).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].c7_plugged_in.eq(1)) return {
@@ -1727,6 +1749,7 @@ addLayer("c7", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[7].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[7].eq(1)) return {
@@ -1747,7 +1770,7 @@ addLayer("c7", {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
             if(player.m.buyables[21].eq(0)) player[this.layer].unlocked = false
-            else player[this.layer].unlocked = hasUpgrade("m",11)
+            else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
             //Effect countdown for buyable 11
             if(player[this.layer].buyables[11].gt(0)) {
@@ -1890,6 +1913,7 @@ addLayer("c8", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(1).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1927,6 +1951,7 @@ addLayer("c8", {
                 },
                 buyMax() {}, // You'll have to handle this yourself if you want
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(3).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1959,6 +1984,7 @@ addLayer("c8", {
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[8].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
+                    if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
                     if(player["p"].circuit_repaired[8].eq(1)) return {
@@ -1979,7 +2005,7 @@ addLayer("c8", {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
             if(player.m.buyables[11].eq(0)) player[this.layer].unlocked = false
-            else player[this.layer].unlocked = hasUpgrade("m",11)
+            else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
             //Effect countdown for buyable 11
             if(player[this.layer].buyables[11].gt(0)) {

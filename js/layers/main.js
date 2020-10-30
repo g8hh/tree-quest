@@ -620,7 +620,7 @@ buyables: {
 //
 //
 
-        doReset(resettingLayer){ // Triggers when this layer is being reset, along with the layer doing the resetting. Not triggered by lower layers resetting, but is by layers on the same row.
+        doReset(resettingLayer) { // Triggers when this layer is being reset, along with the layer doing the resetting. Not triggered by lower layers resetting, but is by layers on the same row.
             m_reset_to_keep = []
             //Pre-reset checks to retain variables:
             //If fusebox key owned retain fuse configuration
@@ -686,7 +686,7 @@ buyables: {
         update(diff) {
             if(player["p"].chapter == "prologue") {
                 //Reset if oxygen runs out (return to maintenance)
-                if (player.points.lte(0)) doReset(this.layer)
+                if (player.points.lte(0) && player.tab == "m") doReset(this.layer)
                 //Gradually refill oxygen when not venturing out
                 if (player.points.lt(layers["p"].maxOxygen()) && !hasUpgrade(this.layer, 11)) player.points = player.points.add(player.points.div(5)).min(layers["p"].maxOxygen())
             }
@@ -761,6 +761,6 @@ buyables: {
         tooltipLocked() { return layers[this.layer].name },
 
         shouldNotify() { // Optional, layer will be highlighted on the tree if true.
-                         // Layer will automatically highlight if an upgrade is purchasable.
+            return player.points.lte(0)             
         }
 })

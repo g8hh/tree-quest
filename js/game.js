@@ -65,7 +65,7 @@ function getNextAt(layer, canMax=false, useType = null) {
 function shouldNotify(layer){
 	for (id in tmp[layer].upgrades){
 		if (!isNaN(id)){
-			if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked){
+			if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked && layer != "m"){ // Modified so Maintenance doesn't notify
 				return true
 			}
 		}
@@ -279,8 +279,9 @@ function gameLoop(diff) {
 
 	if (isNaN(diff)) diff = 0
 
-		if (!player.beginGame) {
-			diff = 0
+	// Show game start screen
+	if (!player.beginGame) {
+		diff = 0
 		player.tab = "gameStart"
 	}
 
@@ -291,6 +292,11 @@ function gameLoop(diff) {
 		player.tab = "gameEnded"
 	}
 	if (player.devSpeed) diff *= player.devSpeed
+
+	//Pause time if the player is "dead" and hasn't returned "home" yet
+	if(player.points.lte(0)) {
+		diff = 0
+	}
 
 	let limit = maxTickLength()
 	if(diff > limit)

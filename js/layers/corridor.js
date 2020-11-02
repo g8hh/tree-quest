@@ -229,6 +229,7 @@ addLayer("c1", {
                         player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                         if(player[this.layer].buyables[11].eq(0)) {
                             player["p"].key_fusebox = new Decimal(1)
+                            addNotification("item","Fusebox Key");
                             player["p"].spent_fuses = new Decimal(1)
                             player["m"].buyables[12] = new Decimal(1)
                         }
@@ -504,6 +505,7 @@ addLayer("c2", {
                     if(player[this.layer].buyables[11].eq(0)) {
                         player["p"].c2_tank_retrieved = new Decimal(1)
                         player["p"].tanks = player["p"].tanks.add(1)
+                        addNotification("item","Oxygen Tank");
                     }
                 }
             }
@@ -759,6 +761,7 @@ addLayer("c3", {
                     if(player[this.layer].buyables[11].eq(0)) {
                         player["p"].c3_tank_retrieved = new Decimal(1)
                         player["p"].tanks = player["p"].tanks.add(1)
+                        addNotification("item","Oxygen Tank");
                     }
                 }
             }
@@ -994,6 +997,7 @@ addLayer("c4", {
                     } else if(player[this.layer].buyables[11].eq(0)) {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player["p"].c4_fuse_retrieved = new Decimal(1)
+                        addNotification("item","Fuse");
                     }
                 }
             }
@@ -1247,6 +1251,7 @@ addLayer("c5", {
                         if(player["p"].c3_lock_analysed.eq(1)) { //If true this is the second run, to get the fuses
                             player["p"].c5_fuses_retrieved = new Decimal(1)
                             player["p"].fuses = player["p"].fuses.add(2)
+                            addNotification("item","Fuses (2x)");
                         } else player["p"].c5_lock_scanned = new Decimal(1) //If this is hit it's the only other possibility
                     }
                 }
@@ -1524,6 +1529,7 @@ addLayer("c6", {
                     if(player[this.layer].buyables[11].eq(0)) {
                         player["p"].c6_fuse_retrieved = new Decimal(1)
                         player["p"].fuses = player["p"].fuses.add(1)
+                        addNotification("item","Fuse");
                     }
                 }
             }
@@ -2014,6 +2020,7 @@ addLayer("c8", {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
                         player["p"].c8_reprogrammer_taken = new Decimal(1)
+                        addNotification("item","Lock Reprogrammer")
                     }
                 }
             }
@@ -2026,6 +2033,7 @@ addLayer("c8", {
                     if(player[this.layer].buyables[12].eq(0)) {
                         player["p"].c8_fuses_retrieved = new Decimal(1)
                         player["p"].fuses = player["p"].fuses.add(3)
+                        addNotification("item","Fuses (3x)");
                     }
                 }
             }

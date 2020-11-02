@@ -275,6 +275,9 @@ VERSION.withName = VERSION.withoutName + (VERSION.name ? ": " + VERSION.name : "
 
 
 function gameLoop(diff) {
+	
+	adjustNotificationTime(diff);
+
 	if (isEndgame() || gameEnded) gameEnded = 1
 
 	if (isNaN(diff)) diff = 0

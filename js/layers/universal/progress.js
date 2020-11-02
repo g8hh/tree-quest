@@ -113,9 +113,10 @@ addLayer("p", {
 
             //Oxygen tanks
             inventoryArray.push(['display-text', '<h2>Inventory</h2><br><br>You possess the following:<br>'])
-            if (player.p.tanks.gt(0)) inventoryArray.push(['display-text', player.p.tanks + ' oxygen tank' + (player.p.tanks.gt(1)?'s':'') + ', granting ' + formatWhole(layers.p.maxOxygen()) + ' seconds of exploration time.'])
-            if (player.p.fuses.add(player.p.spent_fuses).gt(0)) inventoryArray.push(['display-text', player.p.fuses.add(player.p.spent_fuses) + ' fuse' + (player.p.fuses.add(player.p.spent_fuses).gt(1)?'s':'') + ', ' + (player.p.fuses.eq(0)?'all ':'') + (player.p.spent_fuses.eq(0)?'none':player.p.spent_fuses) + ' of which are in use.'])
-            if (player.p.c8_reprogrammer_taken.eq(1)) inventoryArray.push(['display-text', 'A handheld lock scanning device, only usable within the central corridor.'])
+            if (player.p.key_fusebox.eq(1)) inventoryArray.push(['display-text','The key to the fusebox in the Maintenance room.']);
+            if (player.p.tanks.gt(0)) inventoryArray.push(['display-text', player.p.tanks + ' oxygen tank' + (player.p.tanks.gt(1)?'s':'') + ', granting ' + formatWhole(layers.p.maxOxygen()) + ' seconds of exploration time.']);
+            if (player.p.fuses.add(player.p.spent_fuses).gt(0)) inventoryArray.push(['display-text', player.p.fuses.add(player.p.spent_fuses) + ' fuse' + (player.p.fuses.add(player.p.spent_fuses).gt(1)?'s':'') + ', ' + (player.p.fuses.eq(0)?'all ':'') + (player.p.spent_fuses.eq(0)?'none':player.p.spent_fuses) + ' of which are in use.']);
+            if (player.p.c8_reprogrammer_taken.eq(1)) inventoryArray.push(['display-text', 'A handheld lock scanning device, only usable within the central corridor.']);
 
             return inventoryArray
         },

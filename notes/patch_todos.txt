@@ -1,0 +1,1 @@
+01 Update the wording around the C1 fan to make it clear it will run even when the power is off (aids logic for two tank challenge)

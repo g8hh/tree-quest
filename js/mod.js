@@ -10,10 +10,13 @@ let modInfo = {
     initialStartPoints: new Decimal (10) // Used for hard resets and new players
 }
 
+var activeNotifications = [];
+var notificationID = 0;
+
 // Set your version in num and name
 let VERSION = {
-	num: "0.1.1",
-	name: "Deathproof [PROLOGUE]",
+	num: "0.1.2",
+	name: "TELL ME! [PROLOGUE]",
 }
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
@@ -92,4 +95,40 @@ function layerAnyBuyables(layer) {
 function beginGame() {
 	player.beginGame = true;
 	showTab("tree")
+}
+
+//Function to show notifications
+function addNotification(type="none",text="This is a test notification.",timer=3) {
+	switch(type) {
+		case "item":
+			notificationTitle = "Obtained Item!";
+			notificationType = "item-notification"
+			break;
+		case "challenge":
+			notificationTitle = "CHALLENGE DO";
+			notificationType = "challenge-notification"
+			break;
+		default:
+			notificationTitle = "SOMETHING ELSE";
+			notificationType = "default-notification"
+			break;
+	}
+	notificationMessage = text;
+	notificationTimer = timer; //Three seconds until vanishes
+
+	activeNotifications.push({"time":notificationTimer,"type":notificationType,"title":notificationTitle,"message":notificationMessage,"id":notificationID})
+	notificationID++;
+
+	console.log(activeNotifications);
+}
+
+
+//Function to reduce time on active notification
+function adjustNotificationTime(diff) {
+	for(notification in activeNotifications) {
+		activeNotifications[notification].time -= diff;
+		if(activeNotifications[notification]["time"] < 0) {
+			activeNotifications.shift();
+		}
+	}
 }

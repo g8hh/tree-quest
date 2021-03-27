@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<head>
+
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<link rel="stylesheet" type="text/css" href="notification.css" />
+	<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+	<script type="text/javascript" src="js/break_eternity.js"></script>
+	<script type="text/javascript" src="js/layerSupport.js"></script>
+	<script type="text/javascript" src="js/mod.js"></script>
+
+	<script type="text/javascript" src="js/layers/universal/help.js"></script>
+	<script type="text/javascript" src="js/layers/universal/progress.js"></script>
+
+	<!-- Prologue layers -->
+	<script type="text/javascript" src="js/layers/main.js"></script>
+	<script type="text/javascript" src="js/layers/corridor.js"></script>
+
+	<!-- Interior layers -->
+	<script type="text/javascript" src="js/layers/interior.js"></script>
+	<script type="text/javascript" src="js/layers/doorways.js"></script>
+
+	<script type="text/javascript" src="js/temp.js"></script>
+	<script type="text/javascript" src="js/game.js"></script>
+	<script type="text/javascript" src="js/utils.js"></script>
+	<script type="text/javascript" src="js/v.js"></script>
+	<script type="text/javascript" src="js/canvas.js"></script>
+
+</head>
+<body onload="load()">
+
+	<div id="app">
+		<div v-if="false" id="loadingSection" class="fullWidth">
+			<h1>Loading... (If this takes too long it means there was a serious error!)</h1>
+		</div>
+		<div class="vl" v-if="player.tab!='tree'&&player.tab!='gameEnded'&&player.tab!='gameStart'"></div>
+		<div v-if="player.tab=='gameStart'" class="fullWidth">
+			<br>
+			<h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>
+			<h2>This should be considered a prologue/demo - there's a fixed amount of gameplay.</h2><br>
+			<h3>This mod is closer in parts to an adventure/puzzle game than an incremental. (As it stands, there are no incremental features yet)</h3><br>
+			<h3>There's no offline progress, and early parts of the game are time-sensitive.</h3><br>
+			<h3>Hopefully the gameplay is intuitive. If not, check the Help (H) layer, or press H on the keyboard, for assistance.</h3><br><br>
+			<br>
+			<button class="longUpg can" onclick="beginGame()">Begin</button>
+		</div>
+
+		<!-- Notification div -->
+		<div class="notification-container">
+			<transition-group name="fade">
+				<div v-for="notification,index in activeNotifications" class="notification" v-bind:class="notification.type" v-bind:key="notification.id">
+					<h3>{{notification.title}}</h3><br>
+					<h2 v-html="notification.message"></h2>
+				</div>
+			</transition-group>
+		</div>
+
+		<div v-if="player.tab=='gameEnded'" class="fullWidth">
+			<br>
+			<h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>
+			<h3>You've reached the end of the "prologue".</h3><br>
+			<h3>The next layers aren't properly implemented so you can't "keep going", but you're welcome to play again.</h3><br><br>
+			<h3 v-if="player.p.tanks.eq(3)">If you didn't already, try completing the game with only two oxygen tanks! You'll have to be a little creative to manage it in time.</h3>
+			<h3 v-if="player.p.tanks.eq(2)">Congrats on skipping one of the oxygen tanks! Did you do so intentionally?</h3><br><br>
+			<div v-if="!player.timePlayedReset">It took you {{formatTime(player.timePlayed)}} to beat the game.</div>
+			<br>
+			<button class="longUpg can" onclick="hardReset(true)">Play Again</button>&nbsp;&nbsp;&nbsp;&nbsp;<!--<button class="longUpg can" onclick="keepGoing()">Keep Going</button>-->
+			<br><br><br>
+			<span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
+			<a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
+			<a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a><br>
+			<br>
+		</div>
+
+
+		<div v-if="player.tab=='changelog'" class="col right">
+			<button class="back" onclick="showTab('tree')">←</button><br><br><br>
+			Changelog
+		</div>
+		
+		<div v-if="player.tab=='info'" class="col right">
+			<button class="back" onclick="showTab('tree')">←</button><br>
+			<h2>{{modInfo.name}}</h2>
+			<br>
+			<h3>{{VERSION.withName}}</h3>
+			<span v-if="modInfo.author">
+				<br>
+				Made by {{modInfo.author}}	
+			</span>
+			<br>
+			The Modding Tree {{TMT_VERSION.tmtNum}} by Acamaeda
+			<br>
+			The Prestige Tree made by Jacorb and Aarex
+			<br>
+			Original idea by papyrus (on discord)
+			<br><br>
+			<a v-bind:href="modInfo.changelogLink" target="_blank" class="link" >Changelog</a><br>
+			<span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
+			<a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
+			<a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a><br>
+			<br>
+			Note by Jacorb: If anyone wishes to make a mod of this game, that is perfectly fine with me, just make sure to name it something different (ex: Prestige Tree NG+) and to let me know on <a href="https://discord.gg/wwQfgPa" target="_blank">my discord</a>.
+			<br><br>
+			Time Played: {{ formatTime(player.timePlayed) }}<br><br>
+			<h3>Hotkeys</h3><br>
+			<span v-for="key in hotkeys" v-if="player[key.layer].unlocked"><br>{{key.description}}</span>
+		</div>
+		<div v-if="player.tab=='options'" class="col right">
+			<button class="back" onclick="showTab('tree')">←</button><br>
+			<table>
+				<tr>
+					<td><button class="opt" onclick="save()">Save</button></td>
+					<td><button class="opt" onclick="toggleOpt('autosave')">Autosave: {{ player.autosave?"ON":"OFF" }}</button></td>
+					<td><button class="opt" onclick="hardReset()">HARD RESET</button></td>
+				</tr>
+				<tr>
+					<td><button class="opt" onclick="exportSave()">Export to clipboard</button></td>
+					<td><button class="opt" onclick="importSave()">Import</button></td>
+					<td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Prod: {{ player.offlineProd?"ON":"OFF" }}</button></td>
+				</tr>
+				<tr>
+					<td><button class="opt" onclick="switchTheme()">Theme: {{ getThemeName() }}</button></td>
+					<td><button class="opt" onclick="adjustMSDisp()">Show Milestones: {{ player.msDisplay.toUpperCase() }}</button></td>
+					<td><button class="opt" onclick="toggleOpt('hqTree')">High-Quality Tree: {{ player.hqTree?"ON":"OFF" }}</button></td>
+				</tr>
+					<tr>
+						<td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: {{ player.hideChallenges?"HIDDEN":"SHOWN" }}</button></td>
+					<!--	<td><button class="opt" onclick="toggleOpt('oldStyle')">Style: {{ player.oldStyle?"v1.0":"NEW" }}</button></td>-->
+				</tr> 
+			</table>
+		</div>
+		<div id="treeOverlay" class="treeOverlay" v-if="player.tab!='gameEnded' && player.tab!='gameStart'" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.tab == 'tree', col: player.tab != 'tree', left: player.tab != 'tree'}">
+			<div id="version" class="overlayThing" style="margin-right: 13px">{{VERSION.withoutName}}</div>
+			<img id="optionWheel"  class="overlayThing" v-if="player.tab!='options'" src="options_wheel.png" onclick="showTab('options')"></img>
+			<div id="info" v-if="player.tab!='info'"  class="overlayThing" onclick="showTab('info')"><br>i</div>
+			<div id="discord" class="overlayThing">
+				<img onclick="window.open((modInfo.discordLink ? modInfo.discordLink : 'https://discord.gg/F3xveHV'),'mywindow')" src="discord.png"  target="_blank"></img>
+				<ul id="discord-links">
+					<li v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></li>
+					<li><a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br></li>
+					<li><a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a></li>
+				</ul>
+			</div>
+			<div class="overlayThing" style="padding-bottom:7px; width: 90%">
+				<span v-if="player.devSpeed && player.devSpeed != 1" class="overlayThing">
+					<br>Dev Speed: {{format(player.devSpeed)}}x<br>
+				</span>
+				<span v-if="player.offTime !== undefined"  class="overlayThing">
+					<br>Offline Time: {{formatTime(player.offTime.remain)}}<br>
+				</span>
+				<span v-if="false && !player.keepGoing"  class="overlayThing">
+					<br>Reach {{formatWhole(ENDGAME)}} to beat the game!<br>
+				</span>
+				<br>
+				<span v-if="player.points.lt('1e1000')"  class="overlayThing">You have </span>
+				<h2  class="overlayThing" id="points">{{format(player.points)}}</h2>
+				<span v-if="player.points.lt('1e1e6')"  class="overlayThing"> {{modInfo.pointsName}}</span>
+				<br>
+				<span v-if="canGenPoints()"  class="overlayThing">({{format(getPointGen())}}/sec)</span>
+				<div v-for="thing in tmp.displayThings" class="overlayThing"><span v-if="thing" v-html="thing"></span></div>
+			</div>
+			<div class="sideLayers" >
+				<div v-for="node in OTHER_LAYERS['side']"><layer-node :layer='node.layer' :abb='tmp[node.layer].symbol' :size="'small'"></layer-node></div>
+			</div>
+		</div>
+
+
+		<div id="treeTab" style="z-index: 0" v-if="player.tab!='gameEnded' && player.tab!='gameStart'" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.tab == 'tree', col: player.tab != 'tree', left: player.tab != 'tree'}">
+			<br><br><br><br>
+			<div id="fakeHead" style="visibility: hidden;">
+				<span v-if="player.devSpeed && player.devSpeed != 1" class="overlayThing">
+					<br>Dev Speed: {{format(player.devSpeed)}}x<br>
+				</span>
+				<span v-if="player.offTime !== undefined"  class="overlayThing">
+					<br>Offline Time: {{formatTime(player.offTime.remain)}}<br>
+				</span>
+				<span v-if="false && !player.keepGoing"  class="overlayThing">
+					<br>Reach {{formatWhole(ENDGAME)}} to beat the game!<br>
+				</span>
+				<br>
+				<span v-if="player.points.lt('1e1000')"  class="overlayThing">You have </span>
+				<h2  class="overlayThing" id="points">{{format(player.points)}}</h2>
+				<span v-if="player.points.lt('1e1e6')"  class="overlayThing"> {{modInfo.pointsName}}</span>
+				<br>
+				<span v-if="canGenPoints()"  class="overlayThing">({{format(getPointGen())}}/sec)</span>
+				<div v-for="thing in tmp.displayThings" class="overlayThing"><span v-if="thing" v-html="thing"></span></div>
+			</div>
+			<!-- *************************** Modify the tree in the table below - because I need to draw maps like a special snowflake *************************** -->
+
+			<table>
+				<td><layer-node layer='is' abb='SM'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='nd' abb='ND'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='i3' abb='AW3'></layer-node></td>
+			</table><table>
+				<td><button class="treeNode hidden"></button></td>
+			</table>
+
+
+			<table>
+				<td><layer-node layer='i2' abb='AW2'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c8' abb='C8'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c1' abb='C1'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c2' abb='C2'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='in' abb='NI'></layer-node></td>
+			</table><table>
+				<td><button class="treeNode hidden"></button></td>
+			</table>
+
+			<table>
+				<td><layer-node layer='wd' abb='WD'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c7' abb='C7'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='m' abb='M'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c3' abb='C3'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='ed' abb='ED'></layer-node></td>
+			</table><table>
+				<td><button class="treeNode hidden"></button></td>
+			</table>
+
+			<table>
+				<td><layer-node layer='ia' abb='A'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c6' abb='C6'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c5' abb='C5'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='c4' abb='C4'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='i4' abb='AW4'></layer-node></td>
+			</table><table>
+				<td><button class="treeNode hidden"></button></td>
+			</table>
+
+			<table>
+				<td><layer-node layer='i1' abb='AW1'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='nd' abb='ND'></layer-node></td>
+				<td><button class="treeNode hidden"></button></td>
+				<td><layer-node layer='ih' abb='H'></layer-node></td>
+			</table><table>
+				<td><button class="treeNode hidden"></button></td>
+			</table>
+
+
+			<canvas id="treeCanvas" class="canvas"></canvas>
+		</div>
+		<div v-for="layer in LAYERS" >
+			<div v-if="player.tab==layer" v-bind:class="'col right fast tab'"  v-bind:style="[tmp[layer].style ? tmp[layer].style : {}, (tmp[layer].tabFormat && !Array.isArray(tmp[layer].tabFormat)) ? tmp[layer].tabFormat[player.subtabs[layer].mainTabs].style : {}]">
+				<button class="back" onclick="showTab('tree')">←</button><br><br><br>
+				<div v-if="!tmp[layer].tabFormat">
+					<info-box v-if="tmp[layer].infoboxes" :layer="layer" :data="Object.keys(tmp[layer].infoboxes)[0]"></info-box>
+					<main-display v-bind:style="tmp[layer].componentStyles['main-display']" :layer="layer"></main-display>
+					<div v-if="tmp[layer].type !== 'none'">
+						<prestige-button v-bind:style="tmp[layer].componentStyles['prestige-button']" :layer="layer"></prestige-button>
+					</div>
+					<resource-display v-bind:style="tmp[layer].componentStyles['resource-display']" :layer="layer"></resource-display>
+					<br><br>
+					<div v-if="Array.isArray(layers[layer].topsection)">
+						<column :layer="layer" :data="tmp[layer].topsection"></column>
+						<br>
+					</div>
+					<milestones v-bind:style="tmp[layer].componentStyles.milestones" :layer="layer"></milestones>
+					<upgrades v-bind:style="tmp[layer].componentStyles['upgrades']" :layer="layer"></upgrades>
+					<div v-if="Array.isArray(layers[layer].midsection)">
+						<column :layer="layer" :data="tmp[layer].midsection"></column>
+						<br>
+					</div>
+					<clickables v-bind:style="tmp[layer].componentStyles['clickables']" :layer="layer"></clickables>
+					<buyables v-bind:style="tmp[layer].componentStyles.buyables" :layer="layer"></buyables>
+					<challenges v-bind:style="tmp[layer].componentStyles['challenges']" :layer="layer"></challenges>
+					<br><br>
+				</div>
+				<div v-if="tmp[layer].tabFormat">
+					<div v-if="Array.isArray(tmp[layer].tabFormat)">
+						<column :layer="layer" :data="tmp[layer].tabFormat"></column>
+					</div>
+					<div v-else v-bind:style="[{'margin-top': '-50px'}]">
+						<div class="upgTable" v-bind:style="{'padding-top': '25px', 'margin-bottom': '24px'}">
+							<tab-buttons v-bind:style="tmp[layer].componentStyles['tab-buttons']" :layer="layer" :data="tmp[layer].tabFormat" :name="'mainTabs'"></tab-buttons>
+						</div>
+						<column :layer="layer" :data="tmp[layer].tabFormat[player.subtabs[layer].mainTabs].content"></column>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>

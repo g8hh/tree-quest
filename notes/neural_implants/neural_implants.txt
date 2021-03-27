@@ -1,0 +1,20 @@
+NEURAL IMPLANT IDEAS:
+
+1. CALM MIND
+ - The rate at which time passes when idle is slowed by 25% per implant.
+ - Up to 4 implants are possible for a complete reduction.
+ A: granted upon prologue completion
+ B: granted if prologue challenge (skip 2nd tank) completed
+
+2. PERFECT RECALL
+ - When performing an action, you can view other nodes without interrupting the action.
+ - One implant available, all or nothing
+
+3. TIME COMPRESSION
+ - When performing an action, time progresses at a faster rate (both oxygen consumption and action progress)
+ - This could have multiple stages as well, maybe? +0.5x or +1x per upgrade, or even *2x per upgrade, I dunno
+
+4. MUSCLE MEMORY
+ - Once implanted, your best time to reach a given space is stored. You can revisit the space in that time by clicking.
+ - Multiple times can be stored, if the time to reach a location included use of an upgrade (e.g. CALM MIND, or a transportation upgrade)
+

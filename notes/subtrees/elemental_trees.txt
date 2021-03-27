@@ -1,0 +1,89 @@
+Current plan is to have four "temples" representing
+ each of the four standard elements, roughly set up as follows:
+ [N] AIR
+ [E] FIRE
+ [W] WATER
+ [S] EARTH
+
+Once opened, each temple will connect to the walls (somehow).
+
+
+AIR TREE
+========
+
+The air tree will start from the bottom and go up.
+
+Idea dumps:
+[AIR]
+Wind(?)
+Turbine
+Tunnel
+Steam
+Bird?? (Phoenix as fire+air maybe)
+Storm
+
+Its base resource is determined from your oxygen tanks.
+The tanks would have to be "left" in the tree to start it.
+
+Layers:
+
+(OX) OXYGEN (next to bottom, row 0)
+
+(A) AIR (bottom)
+
+(TB) Turbines
+
+(TN) Tunnels
+
+(WI) Wind (Acquisition of wind will allow for removal of air)
+
+
+
+FIRE TREE
+=========
+
+The fire tree will start from the left and go right.
+
+Idea dumps:
+[FIRE]
+Lava
+Ash
+Phoenix
+Coal
+
+
+Its base resource is determined from your "inefficiency".
+The wasted energy from the loop will be calculated as heat.
+
+Layers:
+
+(WE) WASTED ENERGY (next to left, row 0)
+
+(F) FIRE (left)
+
+(SL) Solar Lensing (Acquisition will replace WE))
+
+(FU) Fuel
+
+(MA) Magma
+
+ 
+
+ WATER
+
+ Idea dumps:
+ [WATER]
+ Stream
+ Sea
+ Tsunami
+ Ice (Water + Earth???)
+ Cloud (Water + Air???)
+
+
+ EARTH
+
+ Idea dumps:
+ [EARTH]
+ Coal? (Earth + Fire?)
+ Grass/Tree/etc ("life" earth angle)
+ 

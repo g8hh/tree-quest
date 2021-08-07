@@ -173,7 +173,6 @@ function generatePoints(layer, diff) {
 }
 
 function doReset(layer, force=false) {
-	if (tmp[layer].type == "none") return
 	let row = tmp[layer].row
 	if (!force) {
 		
@@ -329,6 +328,11 @@ function gameLoop(diff) {
 		diff = 0
 		//player.tab = "tmp.gameEnded"
 		clearParticles()
+	}
+
+	//Pause time if the player is "dead" and hasn't returned "home" yet
+	if(player.points.lte(0)) {
+		diff = 0
 	}
 
 	if (maxTickLength) {

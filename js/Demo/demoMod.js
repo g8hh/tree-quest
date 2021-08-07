@@ -2,19 +2,27 @@ let modInfo = {
 	name: "The Modding Tree",
 	id: "modbase",
 	pointsName: "points",
+	modFiles: ["Demo/layers/c.js", "Demo/layers/f.js", "Demo/layers/a.js", "Demo/demoTree.js"],
+
+
 	discordName: "",
 	discordLink: "",
-	changelogLink: "https://github.com/Acamaeda/The-Modding-Tree/blob/master/changelog.md",
-    offlineLimit: 1,  // In hours
-    initialStartPoints: new Decimal (10) // Used for hard resets and new players
+	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "2.1.3.1",
-	name: " We should have thought of this sooner!",
+	num: "2.6.5.1",
+	name: "Fixed Reality",
 }
 
+let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0</h3><br>
+		- Added things.<br>
+		- Added stuff.`
+
+let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
 var doNotCallTheseFunctionsEveryTick = ["doReset", "buy", "onPurchase", "blowUpEverything"]
@@ -53,14 +61,23 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.points.gte(new Decimal("11"))
 }
 
 
 
 // Less important things beyond this point!
 
+// Style for the background, can be a function
+var backgroundStyle = {
+}
+
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(3600000) // Default is 1 hour which is just arbitrarily large
+	return(3600) // Default is 1 hour which is just arbitrarily large
+}
+
+// Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
+// you can cap their current resources with this.
+function fixOldSave(oldVersion){
 }

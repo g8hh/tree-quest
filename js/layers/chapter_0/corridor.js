@@ -21,7 +21,10 @@ addLayer("c1", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[12].eq(1) || !player["p"].fusebox_key) return "gold";
+        else return "grey";
+    },
         branches: ["c8"],
         requires:() => new Decimal(5), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -308,7 +311,10 @@ addLayer("c2", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[13].eq(1)) return "gold";
+        else return "grey";
+    },
         branches: ["c1"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -568,7 +574,10 @@ addLayer("c3", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[23].eq(1)) return "gold";
+        else return "grey";
+    },
         branches: ["c2"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -808,7 +817,10 @@ addLayer("c4", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[33].eq(1)) return "gold";
+        else return "grey";
+    },
         branches: ["c3"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1035,7 +1047,10 @@ addLayer("c5", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[32].eq(1)) return "gold";
+        else return "grey";
+    },
         branches: ["c4"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1273,7 +1288,10 @@ addLayer("c6", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[31].eq(1)) return "gold";
+        else return "grey";
+    },
         branches: ["c5"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1566,7 +1584,10 @@ addLayer("c7", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[21].eq(1)) return "gold";
+        else return "grey";
+    },
         branches: ["c6"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency
@@ -1804,7 +1825,10 @@ addLayer("c8", {
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#DDDD44",
+    color() {
+        if (player["m"].buyables[11].eq(1)) return "gold";
+        else return "grey";
+    },
         branches: ["c7"],
         requires:() => new Decimal(100), // Can be a function that takes requirement increases into account
         resource: "power", // Name of prestige currency

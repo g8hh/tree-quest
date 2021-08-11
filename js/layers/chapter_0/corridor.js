@@ -32,13 +32,6 @@ addLayer("c1", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -77,7 +70,7 @@ addLayer("c1", {
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(0) }, 
+                unlocked() { return !player["p"].fusebox_key }, 
                 canAfford() {
                     return !layerAnyBuyables(this.layer)
                 },
@@ -106,14 +99,14 @@ addLayer("c1", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c1_holding_cable.eq(1)) return "You are holding the power cable in your hand.\n\
+                    if(player["p"].c1_holding_cable) return "You are holding the power cable in your hand.\n\
                         The spring-loaded winch will retract it if you drop it."
-                    if(player["p"].c7_plugged_in.eq(1)) return "The cable is plugged in to the Corridor 7 outlet."
+                    if(player["p"].c7_plugged_in) return "The cable is plugged in to the Corridor 7 outlet."
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) && player["p"].c2_tank_retrieved.eq(0)}, 
+                unlocked() { return player["p"].fusebox_key && !player["p"].c2_tank_retrieved}, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c1_holding_cable.eq(0) && player["p"].c7_plugged_in.eq(0);
+                    return !layerAnyBuyables(this.layer) && !player["p"].c1_holding_cable && !player["p"].c7_plugged_in;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(1)
@@ -123,7 +116,7 @@ addLayer("c1", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(1).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c1_holding_cable.eq(1)) return {
+                    if(player["p"].c1_holding_cable) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -136,8 +129,8 @@ addLayer("c1", {
             },
             13: {
                 title() {
-                    if(player["p"].c6_filter_override.eq(0)) return "Fan Controls Locked Out"
-                    if(player["p"].c1_fan_disabled.eq(1)) return "Overhead Fan Disabled"
+                    if(!player["p"].c6_filter_override) return "Fan Controls Locked Out"
+                    if(player["p"].c1_fan_disabled) return "Overhead Fan Disabled"
                     return "Disable Overhead Fan"
                 },
                 cost(x) {return 0},
@@ -148,14 +141,14 @@ addLayer("c1", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c6_filter_override.eq(0)) return "Controls for the fan in the vent space above.\n\
+                    if(!player["p"].c6_filter_override) return "Controls for the fan in the vent space above.\n\
                         The controls are locked out due to high air toxicity levels."
-                    if(player["p"].c1_fan_disabled.eq(1)) return "The fan in the vent space overhead has been disabled."
+                    if(player["p"].c1_fan_disabled) return "The fan in the vent space overhead has been disabled."
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) && player["p"].c8_fuses_retrieved.eq(0)}, 
+                unlocked() { return player["p"].fusebox_key && !player["p"].c8_fuses_retrieved}, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c6_filter_override.eq(1) && player["p"].c1_fan_disabled.eq(0);
+                    return !layerAnyBuyables(this.layer) && player["p"].c6_filter_override && !player["p"].c1_fan_disabled;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(4)
@@ -165,7 +158,7 @@ addLayer("c1", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c1_fan_disabled.eq(1)) return {
+                    if(player["p"].c1_fan_disabled) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -194,7 +187,7 @@ addLayer("c1", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[1].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -218,7 +211,7 @@ addLayer("c1", {
         },
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
-            if(player["p"].key_fusebox.eq(1) && player.m.buyables[12].eq(0)) player[this.layer].unlocked = false
+            if(player["p"].fusebox_key && player.m.buyables[12].eq(0)) player[this.layer].unlocked = false
             else player[this.layer].unlocked = player.points.gt(0) && hasUpgrade("m",11)
 
             //Effect countdown for buyable 11
@@ -227,7 +220,7 @@ addLayer("c1", {
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
-                        player["p"].key_fusebox = new Decimal(1)
+                        player["p"].fusebox_key = true
                         doPopup("item","Fusebox Key");
                         player["p"].spent_fuses = new Decimal(1)
                         player["m"].buyables[12] = new Decimal(1)
@@ -242,7 +235,7 @@ addLayer("c1", {
                 else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].eq(0)) {
-                        player["p"].c1_holding_cable = new Decimal(1)
+                        player["p"].c1_holding_cable = true
                     }
                 }
             }
@@ -253,7 +246,7 @@ addLayer("c1", {
                 else {
                     player[this.layer].buyables[13] = player[this.layer].buyables[13].sub(diff).max(0)
                     if(player[this.layer].buyables[13].eq(0)) {
-                        player["p"].c1_fan_disabled = new Decimal(1)
+                        player["p"].c1_fan_disabled = true
                     }
                 }
             }
@@ -326,13 +319,6 @@ addLayer("c2", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -356,7 +342,7 @@ addLayer("c2", {
         cols:2,
         11: {
                 title() {
-                    if(player["p"].c6_diagnostic_run.eq(0)) return "Clogged Garbage Disposal"
+                    if(!player["p"].c6_diagnostic_run) return "Clogged Garbage Disposal"
                     return "Remove Oxygen Tank"
                 },
                 cost(x) { // cost for buying xth buyable, can be an object if there are multiple currencies
@@ -370,12 +356,12 @@ addLayer("c2", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c6_diagnostic_run.eq(0)) return "The garbage disposal is jammed, by what appears to be a metal tank."
+                    if(!player["p"].c6_diagnostic_run) return "The garbage disposal is jammed, by what appears to be a metal tank."
                     return displaytext
                 },
-                unlocked() { return player["p"].c2_tank_retrieved.eq(0) },
+                unlocked() { return !player["p"].c2_tank_retrieved },
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c6_diagnostic_run.eq(1);
+                    return !layerAnyBuyables(this.layer) && player["p"].c6_diagnostic_run;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(2)
@@ -395,7 +381,7 @@ addLayer("c2", {
             },
         12: {
                 title() {
-                    if(player["p"].c2_wires_fed.eq(1) || player["p"].c4_loose_wires.eq(0)) return "Damaged Overhead Vent"
+                    if(player["p"].c2_wires_fed || !player["p"].c4_loose_wires) return "Damaged Overhead Vent"
                     return "Feed Wires into Vent"
                 },
                 cost(x) {return 0},
@@ -407,25 +393,25 @@ addLayer("c2", {
                     if(player["m"].buyables[33].eq(0)) displaytext = "(4 seconds)\n\
                     Feed the unpowered wires along the overhead vent."
 
-                    if(player["p"].c2_unpowered_collision.eq(1)) displaytext = "(6 seconds)\n\
+                    if(player["p"].c2_unpowered_collision) displaytext = "(6 seconds)\n\
                     The wire has jammed the overhead fan above Corridor 1. It'll take a little longer to feed it through."
 
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c2_wires_fed.eq(1)) return "The wires have been fed along the vent and are touching the emergency sensor."
-                    if(player["p"].c2_failed_completion.eq(1)) return "The wires collided with the Corridor 1 fan and touched the side.\n\
+                    if(player["p"].c2_wires_fed) return "The wires have been fed along the vent and are touching the emergency sensor."
+                    if(player["p"].c2_failed_completion) return "The wires collided with the Corridor 1 fan and touched the side.\n\
                     The resulting shock caused you to recoil and lose your breath."
-                    if(player["p"].c4_loose_wires.eq(0)) return "The overhead vent is damaged here.\n\
+                    if(!player["p"].c4_loose_wires) return "The overhead vent is damaged here.\n\
                     It runs across the north wall, towards Corridor 8."
                     return displaytext
                 },
-                unlocked() { return player["p"].c8_fuses_retrieved.eq(0) },
+                unlocked() { return !player["p"].c8_fuses_retrieved },
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c4_loose_wires.eq(1) && player["p"].c2_wires_fed.eq(0);
+                    return !layerAnyBuyables(this.layer) && player["p"].c4_loose_wires && !player["p"].c2_wires_fed;
                 },
                 buy() { 
-                        player["p"].c2_failed_completion = new Decimal(0) //Unflag failure if reattempted
+                        player["p"].c2_failed_completion = false //Unflag failure if reattempted
                         if(player["m"].buyables[33].eq(0)) player[this.layer].buyables[this.id] = new Decimal(4) //Shorter time limit if wires off since less care needed
                         else player[this.layer].buyables[this.id] = new Decimal(6) //Longer duration for if the wires are live
                 },
@@ -433,9 +419,9 @@ addLayer("c2", {
                 style() {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(6).mul(100)
-                    if(player["m"].buyables[33].eq(0) && player["p"].c2_unpowered_collision.eq(0)) buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
+                    if(player["m"].buyables[33].eq(0) && !player["p"].c2_unpowered_collision) buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c2_wires_fed.eq(1)) return {
+                    if(player["p"].c2_wires_fed) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -464,7 +450,7 @@ addLayer("c2", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[2].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -498,7 +484,7 @@ addLayer("c2", {
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
-                        player["p"].c2_tank_retrieved = new Decimal(1)
+                        player["p"].c2_tank_retrieved = true
                         player["p"].tanks = player["p"].tanks.add(1)
                         doPopup("item","Oxygen Tank");
                     }
@@ -509,18 +495,18 @@ addLayer("c2", {
             if(player[this.layer].buyables[12].gt(0)) {
                 if(player.tab != "c2") {
                     player[this.layer].buyables[12] = new Decimal(0)
-                    player["p"].c2_unpowered_collision = new Decimal(0) //Reset collision flag if action is interrupted
+                    player["p"].c2_unpowered_collision = false //Reset collision flag if action is interrupted
                 } else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
-                    if(player[this.layer].buyables[12].lt(3) && player["p"].c1_fan_disabled.eq(0) && player["m"].buyables[33].eq(1)) { //C4 powered on, live wires touch fan
+                    if(player[this.layer].buyables[12].lt(3) && !player["p"].c1_fan_disabled && player["m"].buyables[33].eq(1)) { //C4 powered on, live wires touch fan
                         player.points = player.points.sub(1) //Reduce oxygen due to lost breath
                         player[this.layer].buyables[12] = new Decimal(0) //Cancel action
-                        player["p"].c2_failed_completion = new Decimal(1) //Flag for failure text to appear
-                    } else if(player[this.layer].buyables[12].lt(2) && player["p"].c1_fan_disabled.eq(0) && player["m"].buyables[33].eq(0) && player["p"].c2_unpowered_collision.eq(0)) { //C4 powered off, unpowered wires touch fan
+                        player["p"].c2_failed_completion = true //Flag for failure text to appear
+                    } else if(player[this.layer].buyables[12].lt(2) && !player["p"].c1_fan_disabled && player["m"].buyables[33].eq(0) && !player["p"].c2_unpowered_collision) { //C4 powered off, unpowered wires touch fan
                         player[this.layer].buyables[12] = player[this.layer].buyables[12].add(2) //Add 2 seconds for time to navigate around fan
-                        player["p"].c2_unpowered_collision = new Decimal(1) //Flag for unpowered wire colliding with fan
+                        player["p"].c2_unpowered_collision = true //Flag for unpowered wire colliding with fan
                     } else if(player[this.layer].buyables[12].eq(0)) {
-                        player["p"].c2_wires_fed = new Decimal(1)
+                        player["p"].c2_wires_fed = true
                     }
                 }
             }
@@ -593,13 +579,6 @@ addLayer("c3", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -623,7 +602,7 @@ addLayer("c3", {
         cols:2,
         11: {
                 title() {
-                    if(player["p"].c7_vents_open.eq(0)) return "What's in the vent?"
+                    if(!player["p"].c7_vents_open) return "What's in the vent?"
                     return "Retrieve Oxygen Tank"
                 },
                 cost(x) { // cost for buying xth buyable, can be an object if there are multiple currencies
@@ -637,12 +616,12 @@ addLayer("c3", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c7_vents_open.eq(0)) return "You can see something in the vent, but the steel cover is firmly in place..."
+                    if(!player["p"].c7_vents_open) return "You can see something in the vent, but the steel cover is firmly in place..."
                     return displaytext
                 },
-                unlocked() { return player["p"].c3_tank_retrieved.eq(0) },
+                unlocked() { return !player["p"].c3_tank_retrieved },
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c7_vents_open.eq(1);
+                    return !layerAnyBuyables(this.layer) && player["p"].c7_vents_open;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(2)
@@ -662,7 +641,7 @@ addLayer("c3", {
             },
             12: {
                 title() {
-                    if(player["p"].c5_lock_scanned.eq(1) && player["p"].c3_lock_analysed.eq(0)) return "Analyse Lock"
+                    if(player["p"].c5_lock_scanned && !player["p"].c3_lock_analysed) return "Analyse Lock"
                     return "Lock Reprogrammer Station"
                 },
                 cost(x) {return 0},
@@ -673,16 +652,16 @@ addLayer("c3", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c3_lock_analysed.eq(1)) return "The lock has been analysed, and can now be opened with the handheld reprogrammer."
-                    if(player["p"].c8_reprogrammer_taken.eq(0)) return "A base station for reprogramming electronic locks.\n\
+                    if(player["p"].c3_lock_analysed) return "The lock has been analysed, and can now be opened with the handheld reprogrammer."
+                    if(!player["p"].c8_reprogrammer_taken) return "A base station for reprogramming electronic locks.\n\
                     The handheld scanner and unlocker appears to be missing."
-                    if(player["p"].c5_lock_scanned.eq(0)) return "A base station for reprogramming electronic locks.\n\
+                    if(!player["p"].c5_lock_scanned) return "A base station for reprogramming electronic locks.\n\
                     If you scan a lock, you can analyse it here."
                     return displaytext
                 },
-                unlocked() { return player["p"].c5_fuses_retrieved.eq(0) },
+                unlocked() { return !player["p"].c5_fuses_retrieved },
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c5_lock_scanned.eq(1) && player["p"].c3_lock_analysed.eq(0);
+                    return !layerAnyBuyables(this.layer) && player["p"].c5_lock_scanned && !player["p"].c3_lock_analysed;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(6)
@@ -692,7 +671,7 @@ addLayer("c3", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(6).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c3_lock_analysed.eq(1)) return {
+                    if(player["p"].c3_lock_analysed) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -721,7 +700,7 @@ addLayer("c3", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[3].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -754,7 +733,7 @@ addLayer("c3", {
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
-                        player["p"].c3_tank_retrieved = new Decimal(1)
+                        player["p"].c3_tank_retrieved = true
                         player["p"].tanks = player["p"].tanks.add(1)
                         doPopup("item","Oxygen Tank");
                     }
@@ -767,7 +746,7 @@ addLayer("c3", {
                 else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].eq(0)) {
-                        player["p"].c3_lock_analysed = new Decimal(1)
+                        player["p"].c3_lock_analysed = true
                     }
                 }
             }
@@ -840,13 +819,6 @@ addLayer("c4", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -877,12 +849,12 @@ addLayer("c4", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c4_failed_completion.eq(1)) return "The anti-tamper system has kicked in. You will need to wait or cycle power to the corridor to reset it."
+                    if(player["p"].c4_failed_completion) return "The anti-tamper system has kicked in. You will need to wait or cycle power to the corridor to reset it."
                     return displaytext
                 },
-                unlocked() { return player["p"].c4_fuse_retrieved.eq(0) }, 
+                unlocked() { return !player["p"].c4_fuse_retrieved }, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c4_failed_completion.eq(0);
+                    return !layerAnyBuyables(this.layer) && !player["p"].c4_failed_completion;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(4)
@@ -910,12 +882,12 @@ addLayer("c4", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c4_loose_wires.eq(1)) return "You are holding the live wires from the wall."
+                    if(player["p"].c4_loose_wires) return "You are holding the live wires from the wall."
                     return displaytext
                 },
-                unlocked() { return player["p"].c8_fuses_retrieved.eq(0) }, 
+                unlocked() { return !player["p"].c8_fuses_retrieved }, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c4_loose_wires.eq(0);
+                    return !layerAnyBuyables(this.layer) && !player["p"].c4_loose_wires;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(2)
@@ -925,7 +897,7 @@ addLayer("c4", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(2).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c4_loose_wires.eq(1)) return {
+                    if(player["p"].c4_loose_wires) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -954,7 +926,7 @@ addLayer("c4", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[4].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -986,12 +958,12 @@ addLayer("c4", {
                 if(player.tab != "c4") player[this.layer].buyables[11] = new Decimal(0)
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
-                    if(player[this.layer].buyables[11].lt(1) && player["p"].c5_tamper_bypassed.eq(0)) {
+                    if(player[this.layer].buyables[11].lt(1) && !player["p"].c5_tamper_bypassed) {
                         player[this.layer].buyables[11] = new Decimal(0)
-                        player["p"].c4_failed_completion = new Decimal(1)
+                        player["p"].c4_failed_completion = true
                     } else if(player[this.layer].buyables[11].eq(0)) {
                         player["p"].fuses = player["p"].fuses.add(1)
-                        player["p"].c4_fuse_retrieved = new Decimal(1)
+                        player["p"].c4_fuse_retrieved = true
                         doPopup("item","Fuse");
                     }
                 }
@@ -1003,7 +975,7 @@ addLayer("c4", {
                 else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].eq(0)) {
-                        player["p"].c4_loose_wires = new Decimal(1)
+                        player["p"].c4_loose_wires = true
                     }
                 }
             }
@@ -1074,13 +1046,6 @@ addLayer("c5", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -1111,12 +1076,12 @@ addLayer("c5", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c5_tamper_bypassed.eq(1)) return "The anti-tamper system has been bypassed."
+                    if(player["p"].c5_tamper_bypassed) return "The anti-tamper system has been bypassed."
                     return displaytext
                 },
-                unlocked() { return player["p"].c4_fuse_retrieved.eq(0) }, 
+                unlocked() { return !player["p"].c4_fuse_retrieved }, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c5_tamper_bypassed.eq(0);
+                    return !layerAnyBuyables(this.layer) && !player["p"].c5_tamper_bypassed;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(4)
@@ -1126,7 +1091,7 @@ addLayer("c5", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(4).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c5_tamper_bypassed.eq(1)) return {
+                    if(player["p"].c5_tamper_bypassed) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1139,8 +1104,8 @@ addLayer("c5", {
             },
             12: {
                 title() {
-                    if(player["p"].c3_lock_analysed.eq(1)) return "Crack Lock"
-                    if(player["p"].c8_reprogrammer_taken.eq(1) && player["p"].c5_lock_scanned.eq(0)) return "Scan Lock"
+                    if(player["p"].c3_lock_analysed) return "Crack Lock"
+                    if(player["p"].c8_reprogrammer_taken && !player["p"].c5_lock_scanned) return "Scan Lock"
                     return "Locked Electronics Closet"
                 },
                 cost(x) {return 0},
@@ -1148,22 +1113,22 @@ addLayer("c5", {
                 display() { // Everything else displayed in the buyable button after the title
                     displaytext = "A closet containing spare electrical components. The lock resets whenever the power is cycled."
 
-                    if(player["p"].c8_reprogrammer_taken.eq(1)) displaytext = "(4 seconds)\n\
+                    if(player["p"].c8_reprogrammer_taken) displaytext = "(4 seconds)\n\
                     Scan the lock with the handheld reprogrammer."
 
-                    if(player["p"].c5_lock_scanned.eq(1)) displaytext = "A closet containing spare electrical components. The lock resets whenever the power is cycled.\n\
+                    if(player["p"].c5_lock_scanned) displaytext = "A closet containing spare electrical components. The lock resets whenever the power is cycled.\n\
                     Your reprogrammer has scanned the lock and is ready for analysis."
 
-                    if(player["p"].c3_lock_analysed.eq(1)) displaytext = "(4 seconds)\n\
+                    if(player["p"].c3_lock_analysed) displaytext = "(4 seconds)\n\
                     Crack the lock open using the reprogrammer's bypass codes."
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
                     return displaytext
                 },
-                unlocked() { return player["p"].c5_fuses_retrieved.eq(0) }, 
+                unlocked() { return !player["p"].c5_fuses_retrieved }, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && (player["p"].c3_lock_analysed.eq(1) || (player["p"].c8_reprogrammer_taken.eq(1) && player["p"].c5_lock_scanned.eq(0)));
+                    return !layerAnyBuyables(this.layer) && (player["p"].c3_lock_analysed || (player["p"].c8_reprogrammer_taken && !player["p"].c5_lock_scanned));
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(4)
@@ -1199,7 +1164,7 @@ addLayer("c5", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[5].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -1232,7 +1197,7 @@ addLayer("c5", {
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
-                        player["p"].c5_tamper_bypassed = new Decimal(1)
+                        player["p"].c5_tamper_bypassed = true
                     }
                 }
             }
@@ -1243,11 +1208,11 @@ addLayer("c5", {
                 else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].eq(0)) {
-                        if(player["p"].c3_lock_analysed.eq(1)) { //If true this is the second run, to get the fuses
-                            player["p"].c5_fuses_retrieved = new Decimal(1)
+                        if(player["p"].c3_lock_analysed) { //If true this is the second run, to get the fuses
+                            player["p"].c5_fuses_retrieved = true
                             player["p"].fuses = player["p"].fuses.add(2)
                             doPopup("item","Fuses (2x)");
-                        } else player["p"].c5_lock_scanned = new Decimal(1) //If this is hit it's the only other possibility
+                        } else player["p"].c5_lock_scanned = true //If this is hit it's the only other possibility
                     }
                 }
             }
@@ -1319,13 +1284,6 @@ addLayer("c6", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -1361,7 +1319,7 @@ addLayer("c6", {
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
                     return displaytext
                 },
-                unlocked() { return player["p"].c6_fuse_retrieved.eq(0) }, 
+                unlocked() { return !player["p"].c6_fuse_retrieved }, 
                 canAfford() {
                     return !layerAnyBuyables(this.layer);
                 },
@@ -1383,8 +1341,8 @@ addLayer("c6", {
             },
         12: {
                 title() {// Optional, displayed at the top in a larger font
-                    if(player["p"].c6_diagnostic_run.eq(1)) return "Blockage Found!"
-                    if(player["p"].c7_plugged_in.eq(1) && player["m"].buyables[12].eq(1)) return "Run Garbage Disposal Diagnostic" //If wire plugged in and C1 has power
+                    if(player["p"].c6_diagnostic_run) return "Blockage Found!"
+                    if(player["p"].c7_plugged_in && player["m"].buyables[12].eq(1)) return "Run Garbage Disposal Diagnostic" //If wire plugged in and C1 has power
                     return  "Unpowered Maintenance Terminal"
                 },
                 cost(x) { // cost for buying xth buyable, can be an object if there are multiple currencies
@@ -1399,17 +1357,17 @@ addLayer("c6", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c6_diagnostic_run.eq(1)) return "A blockage has been detected. The garbage disposal has been opened.\n\
+                    if(player["p"].c6_diagnostic_run) return "A blockage has been detected. The garbage disposal has been opened.\n\
                     Please remove the blockage."
-                    if(player["p"].c7_plugged_in.eq(0)) return "A blank maintenance terminal, connected to an auxiliary power socket in Corridor 7."
+                    if(!player["p"].c7_plugged_in) return "A blank maintenance terminal, connected to an auxiliary power socket in Corridor 7."
                     if(player["m"].buyables[12].eq(0)) return "A blank maintenance terminal. The cable from Corridor 1 is connected but unpowered." //When wire connected but C1 off
                     if(player["m"].buyables[13].eq(0)) return "Garbage disposal unit, Corridor 2 - unable to query status.\n\
                     Please check there is power to the unit." //Cannot run check if corridor 2 is off
                     return displaytext
                 },
-                unlocked() { return player["p"].c2_tank_retrieved.eq(0) }, 
+                unlocked() { return !player["p"].c2_tank_retrieved }, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c7_plugged_in.eq(1) && player["p"].c6_diagnostic_run.eq(0) && player["m"].buyables[12].eq(1) && player["m"].buyables[13].eq(1);
+                    return !layerAnyBuyables(this.layer) && player["p"].c7_plugged_in && !player["p"].c6_diagnostic_run && player["m"].buyables[12].eq(1) && player["m"].buyables[13].eq(1);
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(5)
@@ -1419,7 +1377,7 @@ addLayer("c6", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c6_diagnostic_run.eq(1)) return {
+                    if(player["p"].c6_diagnostic_run) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1432,7 +1390,7 @@ addLayer("c6", {
             },
             13: {
                 title() {// Optional, displayed at the top in a larger font
-                    if(player["p"].c6_filter_override.eq(1)) return "Filtration System Overridden"
+                    if(player["p"].c6_filter_override) return "Filtration System Overridden"
                     return  "Override Filtration System"
                 },
                 cost(x) {return 0},
@@ -1444,13 +1402,13 @@ addLayer("c6", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c6_filter_override.eq(1)) return "The filtration system has been overridden.\n\
+                    if(player["p"].c6_filter_override) return "The filtration system has been overridden.\n\
                     Safety locks on fan controls are disabled."
                     return displaytext
                 },
-                unlocked() { return player["p"].c8_fuses_retrieved.eq(0) }, 
+                unlocked() { return !player["p"].c8_fuses_retrieved }, 
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c6_filter_override.eq(0);
+                    return !layerAnyBuyables(this.layer) && !player["p"].c6_filter_override;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(5)
@@ -1460,7 +1418,7 @@ addLayer("c6", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(5).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c6_filter_override.eq(1)) return {
+                    if(player["p"].c6_filter_override) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1489,7 +1447,7 @@ addLayer("c6", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[6].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -1522,7 +1480,7 @@ addLayer("c6", {
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
-                        player["p"].c6_fuse_retrieved = new Decimal(1)
+                        player["p"].c6_fuse_retrieved = true
                         player["p"].fuses = player["p"].fuses.add(1)
                         doPopup("item","Fuse");
                     }
@@ -1535,7 +1493,7 @@ addLayer("c6", {
                 else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].eq(0)) {
-                        player["p"].c6_diagnostic_run = new Decimal(1)
+                        player["p"].c6_diagnostic_run = true
                     }
                 }
             }
@@ -1546,7 +1504,7 @@ addLayer("c6", {
                 else {
                     player[this.layer].buyables[13] = player[this.layer].buyables[13].sub(diff).max(0)
                     if(player[this.layer].buyables[13].eq(0)) {
-                        player["p"].c6_filter_override = new Decimal(1)
+                        player["p"].c6_filter_override = true
                     }
                 }
             }
@@ -1619,13 +1577,6 @@ addLayer("c7", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -1661,12 +1612,12 @@ addLayer("c7", {
 
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c7_vents_open.eq(1)) return "The vents in Corridors 3 and 7 are now open."
+                    if(player["p"].c7_vents_open) return "The vents in Corridors 3 and 7 are now open."
                     return displaytext
                 },
-                unlocked() { return player["p"].c3_tank_retrieved.eq(0) },
+                unlocked() { return !player["p"].c3_tank_retrieved },
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c7_vents_open.eq(0);
+                    return !layerAnyBuyables(this.layer) && !player["p"].c7_vents_open;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(3)
@@ -1676,7 +1627,7 @@ addLayer("c7", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(3).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c7_vents_open.eq(1)) return {
+                    if(player["p"].c7_vents_open) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1689,7 +1640,7 @@ addLayer("c7", {
             },
         12: {
                 title() {
-                    if(player["p"].c1_holding_cable.eq(1)) return "Plug in Auxiliary Power Cable"
+                    if(player["p"].c1_holding_cable) return "Plug in Auxiliary Power Cable"
                     return "Auxiliary Power Inlet"
                 },
                 cost(x) { return 0 },
@@ -1699,15 +1650,15 @@ addLayer("c7", {
                     Plug the auxiliary power cable into the wall socket."
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c7_plugged_in.eq(1)) return "The cable is plugged in, held in place by electromagnets.\n\
+                    if(player["p"].c7_plugged_in) return "The cable is plugged in, held in place by electromagnets.\n\
                         Power is being supplied to the maintenance terminal in Corridor 6."
-                    if(player["p"].c1_holding_cable.eq(0)) return "An auxiliary power inlet connected to the maintenance terminal in Corridor 6.\n\
+                    if(!player["p"].c1_holding_cable) return "An auxiliary power inlet connected to the maintenance terminal in Corridor 6.\n\
                         Perhaps there's a cable you can use nearby."
                     return displaytext
                 },
-                unlocked() { return player["p"].c2_tank_retrieved.eq(0) },
+                unlocked() { return !player["p"].c2_tank_retrieved },
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c1_holding_cable.eq(1);
+                    return !layerAnyBuyables(this.layer) && player["p"].c1_holding_cable;
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(2)
@@ -1717,7 +1668,7 @@ addLayer("c7", {
                     if(player.points.lte(0)) return {'background-color': buyableLockedColour}
                     buyablePct = player[this.layer].buyables[this.id].div(2).mul(100)
                     if(buyablePct.eq(0)) buyablePct = new Decimal(100)
-                    if(player["p"].c7_plugged_in.eq(1)) return {
+                    if(player["p"].c7_plugged_in) return {
                         'background-color': buyableProgressColour
                     }
                     if(!this.canAfford() && player[this.layer].buyables[this.id].eq(0)) return {
@@ -1746,7 +1697,7 @@ addLayer("c7", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[7].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -1779,7 +1730,7 @@ addLayer("c7", {
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
-                        player["p"].c7_vents_open = new Decimal(1)
+                        player["p"].c7_vents_open = true
                     }
                 }
             }
@@ -1790,8 +1741,8 @@ addLayer("c7", {
                 else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].eq(0)) {
-                        player["p"].c1_holding_cable = new Decimal(0)
-                        player["p"].c7_plugged_in = new Decimal(1)
+                        player["p"].c1_holding_cable = false
+                        player["p"].c7_plugged_in = true
                     }
                 }
             }
@@ -1864,13 +1815,6 @@ addLayer("c8", {
         base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
         resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
         canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(1)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
             return {} // Formulas for any boosts inherent to resources in the layer. Can return a single value instead of an object if there is just one effect
@@ -1905,7 +1849,7 @@ addLayer("c8", {
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
                     return displaytext
                 },
-                unlocked() { return player["p"].c8_reprogrammer_taken.eq(0) },
+                unlocked() { return !player["p"].c8_reprogrammer_taken },
                 canAfford() {
                     return !layerAnyBuyables(this.layer);
                 },
@@ -1927,7 +1871,7 @@ addLayer("c8", {
             },
         12: {
                 title() {
-                    if(player["p"].c2_wires_fed.eq(1) && player["m"].buyables[33].eq(1)) return "Remove Fuses from Circuit Box"
+                    if(player["p"].c2_wires_fed && player["m"].buyables[33].eq(1)) return "Remove Fuses from Circuit Box"
                     return "Emergency System Circuit Box"
                 },
                 cost(x) { return 0 },
@@ -1937,15 +1881,15 @@ addLayer("c8", {
                     Remove the fuses from the emergency system."
                     if(player[this.layer].buyables[this.id].gt(0)) displaytext = displaytext + "\n\
                     Time remaining: " + format(player[this.layer].buyables[this.id]) + " seconds."
-                    if(player["p"].c2_wires_fed.eq(0)) return "The circuit box for the emergency systems.\n\
+                    if(!player["p"].c2_wires_fed) return "The circuit box for the emergency systems.\n\
                     Should unlock if the sensor in the vents is shorted out."
                     if(player["m"].buyables[33].eq(0)) return "The circuit box for the emergency systems.\n\
                     The wires from corridor 4 are now touching the sensor, but unpowered."  //Displays if the wires have been fed but C4 is switched off
                     return displaytext
                 },
-                unlocked() { return player["p"].c8_fuses_retrieved.eq(0) },
+                unlocked() { return !player["p"].c8_fuses_retrieved },
                 canAfford() {
-                    return !layerAnyBuyables(this.layer) && player["p"].c2_wires_fed.eq(1) && player["m"].buyables[33].eq(1)
+                    return !layerAnyBuyables(this.layer) && player["p"].c2_wires_fed && player["m"].buyables[33].eq(1)
                 },
                 buy() { 
                         player[this.layer].buyables[this.id] = new Decimal(3)
@@ -1981,7 +1925,7 @@ addLayer("c8", {
                     Circuit components repaired: " + player["p"].total_circuits_repaired + "/8"
                     return displaytext
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1)},
+                unlocked() { return player["p"].fusebox_key},
                 canAfford() {return !layerAnyBuyables(this.layer) && player["p"].circuit_repaired[8].eq(0)},
                 buy() {player[this.layer].buyables[this.id] = new Decimal(5)},
                 style() {
@@ -2014,7 +1958,7 @@ addLayer("c8", {
                 else {
                     player[this.layer].buyables[11] = player[this.layer].buyables[11].sub(diff).max(0)
                     if(player[this.layer].buyables[11].eq(0)) {
-                        player["p"].c8_reprogrammer_taken = new Decimal(1)
+                        player["p"].c8_reprogrammer_taken = true
                         doPopup("item","Lock Reprogrammer")
                     }
                 }
@@ -2026,7 +1970,7 @@ addLayer("c8", {
                 else {
                     player[this.layer].buyables[12] = player[this.layer].buyables[12].sub(diff).max(0)
                     if(player[this.layer].buyables[12].eq(0)) {
-                        player["p"].c8_fuses_retrieved = new Decimal(1)
+                        player["p"].c8_fuses_retrieved = true
                         player["p"].fuses = player["p"].fuses.add(3)
                         doPopup("item","Fuses (3x)");
                     }

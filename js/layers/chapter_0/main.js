@@ -148,7 +148,7 @@ addLayer("m", {
                 cost:() => new Decimal(0),
                 unlocked() { return hasUpgrade(this.layer, 11) }, // The upgrade is only visible when this is true
                 effect() {
-                    if(hasUpgrade(this.layer, 12)) doReset(this.layer)
+                    if(hasUpgrade(this.layer, 12)) layers[this.layer].doReset(this.layer)
                 },
             },
             13: {
@@ -680,7 +680,7 @@ buyables: {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
                 //Reset if oxygen runs out (return to maintenance)
-                if (player.points.lte(0) && player.tab == "m") doReset(this.layer)
+                if (player.points.lte(0) && player.tab == "m") layers[this.layer].doReset(this.layer)
                 //Gradually refill oxygen when not venturing out
                 if (player.points.lt(layers["p"].maxOxygen()) && !hasUpgrade(this.layer, 11)) player.points = player.points.add(player.points.div(5)).min(layers["p"].maxOxygen())
         }, // Do any gameloop things (e.g. resource generation) inherent to this layer

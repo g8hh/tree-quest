@@ -106,7 +106,7 @@ tabFormat: {
             <p>You start with one fuse, in the Corridor 1 slot. You can click to remove this fuse, which will then allow you to place it in another corridor. As you find additional fuses, you can power multiple sections at once.</p><br>\n\
             <p>You can only venture in powered sections. You can change which sections are powered whilst still in 'venture' mode, but most tasks will reset if their section is powered off, or be uncompletable if a preceding section is. (There are exceptions to this. Whilst not required, they will let you 'sequence break', so feel free to experiment!)"]
         ],
-        unlocked() { return player.p.chapter=="prologue" && player.p.key_fusebox.eq(1) }
+        unlocked() { return player.p.chapter=="prologue" && player.p.fusebox_key }
     }
 }
 

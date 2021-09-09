@@ -70,5 +70,8 @@ function closeInterstitial() {
             player["p"].tanks = player["p"].tanks.add(1);
             doPopup("item","Oxygen Tank");
             break;
+        case "chapter_1":
+            player["p"].chapter = 1;
+            break;
     }
 }

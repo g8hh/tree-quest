@@ -1,6 +1,6 @@
 let modInfo = {
 	name: "TreeQuest",
-	id: "treequest-nova-dev",
+	id: "treequest-nova",
 	author: "smiley#0443",
 	pointsName: "oxygen",
 	modFiles: [
@@ -52,44 +52,21 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.2.1-pre-04",
-	name: "Historia [PROLOGUE] DEV BUILD",
+	num: "0.2.1",
+	name: "Generations/Historia",
 }
 
 let changelog = `<h1>TreeQuest Changelog:</h1><br><br>
 
-<h3>v0.2.1-pre-04<br>
--Added flavour text to all layers<br>
--Amended layer colours for consistency<br>
--Amended "two tanks" challenge so third tank can be retrieved manually<br>
--Game clock now counts in real time and gives a time at endgame<br><br>
-
-<h3>v0.2.1-pre-03<br>
--Jack no longer resets when leaving the elevator, but can be retrieved from where it was used<br>
--Added flavour text for the Laboratory<br><br>
-
-<h3>v0.2.1-pre-02<br>
-- Flavour text changes for Reception/Corridor (Vertical)<br>
-- Fixed the "two tanks" milestone so it actually triggers (and gives you the third tank back)<br>
-- Fixed the issue with "escaping" the Security lock-in via side layers<br>
-- ID card now required for swipes<br>
-- ID card can be retrieved from Reception or Security if forgotten<br><br>
-
-<h3>v0.2.1-pre-01<br>
-- Bug fix in corridor tasks<br>
-- Reworked logic/flavour text of the "scan lock" task chain<br>
-- Changed off colour of main generator from red to grey<br><br>
-
-<h3>v0.2.1-pre (Historia [PROLOGUE] DEV BUILD)<br>
-- THIS IS A DEV BUILD. Parts of the story/flavour text are unfinished!<br><br>
+<h3>v0.2.1 (Historia)<br>
 Content additions:<br>
 - Prologue section (chapter -1, lol): a brief introduction with 5-6 nodes, and a couple of tasks, set before/during the Chapter 0 story entry<br>
-- A few bits of flavour text on the Interior/Vertical nodes, still a work in progress<br><br>
+- Flavour text on interior and vertical nodes<br><br>
 Technical changes:<br>
+- Game clock now counts in real time, outside of interstitials
 - Miscellaneous CSS changes<br><br>
 
-<h3>v0.2.0-pre-01 (Generations [INTERIOR] DEV BUILD)<br>
-- THIS IS A DEV BUILD. There's a functional gameplay route to endgame but there's very little lore/story, and what does exist is subject to change.<br><br>
+<h3>v0.2.0 (Generations)<br>
 Content additions:<br>
 - Reworked Interior map after Chapter 0 complete<br>
 - Second map representing vertical height<br>
@@ -161,8 +138,9 @@ function getPointGen() {
 function addedPlayerData() { 
 	return {
 		showInterstitial: true,
-		interstitialName: "begin_game"
-}
+		interstitialName: "begin_game",
+		usingOldSave: false,
+	}
 }
 
 // Display extra things at the top of the page
@@ -204,6 +182,10 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion){
+	if (oldVersion.slice(0,3) == '0.1') {
+		player.usingOldSave = true;
+		if (confirm("This update has added content before the start of your previous playthrough. I *highly* recommend hard resetting - do you wish to do so?")) hardReset();
+	}
 }
 
 //Constants for buyable colours (I might put this elsewhere if there's a better place for it)

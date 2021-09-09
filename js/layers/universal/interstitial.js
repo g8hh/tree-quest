@@ -17,10 +17,11 @@ interstitialList = {
         content: `<br>
         <h1>${modInfo.name}</h1><br><br>
         <h2>${VERSION.num} - ${VERSION.name}</h2><br><br>
-        <h2>This is a DEV BUILD - it contains mechanical gameplay but is lacking in story/lore.</h2><br><br>    
         <h3>This mod is closer in parts to an adventure/puzzle game than an incremental. (As it stands, there are no incremental features yet)</h3><br>
         <h3>There's no offline progress, and early parts of the game are time-sensitive.</h3><br>
-        <h3>Hopefully the gameplay is intuitive. If not, check the Help (H) layer, or press H on the keyboard, for assistance.</h3>`,
+        <h3>Hopefully the gameplay is intuitive. If not, check the Help (H) layer, or press H on the keyboard, for assistance.</h3><br>
+        <h3>Feel free to contact me on Discord (via either of the Modding Tree servers) for assistance, suggestions or bug reports - any input is appreciated!</h3><br><br>
+        NOTE: saves from the DEV version are incompatible with this version.`,
         buttons: `<button class="longUpg can" onclick="closeInterstitial()">Begin</button>`,
     },
 

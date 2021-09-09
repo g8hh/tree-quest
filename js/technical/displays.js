@@ -16,6 +16,8 @@ function constructNodeStyle(layer){
 	let style = []
 	if ((tmp[layer].isLayer && layerunlocked(layer)) || (!tmp[layer].isLayer && tmp[layer].canClick))
 		style.push({'background-color': tmp[layer].color})
+	else if(tmp[layer].isLayer)
+		style.push({"background": "repeating-linear-gradient( 135deg, " + tmp[layer].color + ", " + tmp[layer].color + " 20px, #bf8f8f 20px, #bf8f8f 40px)"})
 	if (tmp[layer].image !== undefined)
 		style.push({'background-image': 'url("' + tmp[layer].image + '")'})
 	if(tmp[layer].notify && player[layer].unlocked)

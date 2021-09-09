@@ -45,6 +45,7 @@ var systemComponents = {
 				resetNotify: tmp[layer].prestigeNotify,
 				can: ((player[layer].unlocked || tmp[layer].canReset) && tmp[layer].isLayer) || (!tmp[layer].isLayer && tmp[layer].canClick),
 				front: !tmp.scrolled,
+				current: player.tab == layer && highlightCurrent,
 			}"
 			v-bind:style="constructNodeStyle(layer)">
 			<span v-html="(abb !== '' && tmp[layer].image === undefined) ? abb : '&nbsp;'"></span>

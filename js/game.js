@@ -330,17 +330,16 @@ function gameLoop(diff) {
 		clearParticles()
 	}
 
-	//Pause time if the player is "dead" and hasn't returned "home" yet
-	if(player.points.lte(0)) {
-		diff = 0
-	}
+	if (!player.showInterstitial) addTime(diff);
+	// Alter the flow of time based on various conditions
+	diff = timeControl(diff);
 
 	if (maxTickLength) {
 		let limit = maxTickLength()
 		if(diff > limit)
 			diff = limit
 	}
-	addTime(diff)
+
 	player.points = player.points.add(tmp.pointGen.times(diff)).max(0)
 
 	for (let x = 0; x <= maxRow; x++){

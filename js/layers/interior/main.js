@@ -1,17 +1,19 @@
 addLayer("mc", {
         layer: "mc", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
-        name: "Maintenance/Control", // This is optional, only used in a few places, If absent it just uses the layer id.
+        name: "Main Control", // This is optional, only used in a few places, If absent it just uses the layer id.
         symbol: "MC",
         startData() { return {
             unlocked: true,
             points: new Decimal(1),
             openDoors: new Decimal(0),
             buyables: {}, // You don't actually have to initialize this one
+            clickables: {11: "OFF"},
+            generatorLog: []
         }},
         convertToDecimal() {
             // Convert any layer-specific Decimal values (besides points, total, and best) from String to Decimal (used when loading save)
         },
-        color:() => "#4BDC13",
+        color: "#77bf5f",
 
         branches() {
             branchlist = ["g1","g2","g3","g4","g5","g6","g7","g8"]
@@ -40,64 +42,130 @@ addLayer("mc", {
         },
 
         tabFormat: [
+            ['display-text','<h2>MAIN CONTROL</h2>'],
+            "blank",
+            ['display-text',`After reactivating life support, you took some time to explore the maintenance room. It appears this room serves as some form of central control for power and other critical systems.
+            For now, as life support appears to be stable, you turned your focus to power generation.<br><br>
+            From what you understand, the installation can produce its own power from a series of eight generators daisy-chained together. Between the damage to the building, and your own repairs to life support, the generators are functionally limited at best and outright broken at worst.
+            If you can repair a couple of the generators, you should be able to produce a stable loop, though it'd only provide enough power for the first couple of floors of an installation this size.`],
+            "blank",
+            ['display-text',function() {
+                text = `<h3>The generator loop is currently `;
+                if (getClickableState(this.layer, 11) == "ON") text += `<span style='color: green'>ONLINE</span>.</h3>`;
+                else text += `<span style='color: #bf8f8f'>OFFLINE</span>.</h3>`;
+                return text;
+            }],
+            "blank",
+            ['display-text',function() { return '<h3>Average power output: ' + format(player[this.layer].points) + '</h3>'; }],
+            "blank",
+            "clickables",
+            "blank",
             ['display-text', function() {
-                return "sample text"
+                text = "<h3>LOG</h3><br>";
+
+                for (entry in player[this.layer].generatorLog) {
+                    text += "<br>" + player[this.layer].generatorLog[entry];
+                }
+
+                return text;
             }]
         ],
 
-        milestones: {},
-        upgrades: {},
-buyables: {},
-
-        doReset(resettingLayer){},
-        layerShown() {return true}, // Condition for when layer appears on the tree
-
-        powerBase() {
-          return 10 //to flesh out, obviously  
+        clickables: {
+            11: {
+                title() {
+                    return getClickableState(this.layer, this.id);
+                },
+                display() { 
+                    if (getClickableState(this.layer,this.id) == "OFF") return "Click to turn ON.";
+                    else return "Click to turn OFF."
+                },
+                canClick() { return true; },
+                onClick() {
+                    if (getClickableState(this.layer,this.id) == "OFF") {
+                        setClickableState(this.layer, this.id, "ON");
+                        player["g8"].points = new Decimal(100); // Initiate cycle with power to G8
+                    }
+                    else {
+                        setClickableState(this.layer, this.id, "OFF");
+                        // Drain power from all 8 gens
+                        player["g1"].points = new Decimal(0);
+                        player["g2"].points = new Decimal(0);
+                        player["g3"].points = new Decimal(0);
+                        player["g4"].points = new Decimal(0);
+                        player["g5"].points = new Decimal(0);
+                        player["g6"].points = new Decimal(0);
+                        player["g7"].points = new Decimal(0);
+                        player["g8"].points = new Decimal(0);
+                        player["mc"].points = new Decimal(0);   // Set average to 0 too, important!
+                        player["mc"].generatorLog = [];
+                    }
+                },
+                style() {
+                    if (getClickableState(this.layer, this.id) == "ON") color = "#77bf7f";
+                    else color = "grey";
+                    return {"background-color": color};
+                }
+            }
         },
+
         update(diff) {
 
-            temp_power = player[this.layer].points
+            if (getClickableState(this.layer, 11) == "ON" && player["g8"].points.gt(0)) { // to replace with if power cycle active
 
-            //C1
-            temp_power = layers["g1"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            //C2
-            temp_power = layers["g2"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            //C3
-            temp_power = layers["g3"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            //C4
-            temp_power = layers["g4"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            //C5
-            temp_power = layers["g5"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            //C6
-            temp_power = layers["g6"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            //C7
-            temp_power = layers["g7"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            //C8
-            temp_power = layers["g8"].powerCycle[temp_power,layers[this.layer].powerBase(),diff]
-            
-            player[this.layer].points = temp_power
+                ///////////////////////////
+                // POWER GENERATION LOOP //
+                ///////////////////////////
+                temp_power = player["g8"].points
+                
+                average_power = new Decimal(0);
+
+                player[this.layer].generatorLog = [];
+
+                for (l of ["g1","g2","g3","g4","g5","g6","g7","g8"]) {
+                    if (temp_power.eq(0)) {
+                        player[l].points = temp_power;
+                    } else {
+                        temp_power = temp_power.times(player[l].efficiency);
+                        
+                        player[this.layer].generatorLog.push (l + ": " + format(temp_power) + " power (" + player[l].efficiency * 100 + "% efficiency)");
+
+                        temp_power = generatorTypes[player[l].generatorType].generate(temp_power).max(0);
+
+                        player[this.layer].generatorLog.push(l + ": " + format(temp_power) + " power (" + generatorTypes[player[l].generatorType].effectDescription + ")");
+
+                        player[l].points = temp_power;
+
+                        average_power = average_power.add(temp_power);
+
+                    }
+
+                }
+
+                average_power = average_power.div(8);
+
+                if (player["g8"].points.eq(0)) {
+                    average_power = new Decimal(0);
+                    player[this.layer].generatorLog.push("<span style='color: #bf8f8f'>CRITICAL ERROR: Power loop unsustainable.</span>");
+                }
+
+                player[this.layer].points = average_power;
+
+            }
+
 
         }, // Do any gameloop things (e.g. resource generation) inherent to this layer
-        automate() {}, // Do any automation inherent to this layer if appropriate
-        updateTemp() {
-        }, // Do any necessary temp updating, not that important usually
-        resetsNothing() {return false},
-        onPrestige(gain) {
-
-            return
-        }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
-
-        hotkeys: [
-            {key: "p", description: "C: reset for lollipops or whatever", onPress(){if (player[this.layer].unlocked) doReset(this.layer)}},
-        ],
-        incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
-
         tooltip() { // Optional, tooltip displays when the layer is unlocked
-            let tooltip = formatWhole(player[this.layer].points) + " " + this.resource
-            return tooltip
+            return this.name;
         },
-        shouldNotify() { // Optional, layer will be highlighted on the tree if true.
-                         // Layer will automatically highlight if an upgrade is purchasable.
-        }
+
+        // Utility functions, might keep might ditch
+        spark() {
+            player[this.layer].points = new Decimal(100);
+        },
+
+        drain() {
+            player[this.layer].points = new Decimal(0);
+        },
+
 })

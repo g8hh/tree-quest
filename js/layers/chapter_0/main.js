@@ -4,8 +4,6 @@ addLayer("m", {
         startData() { return {
             unlocked: true,
             points: new Decimal(0),
-            power_efficiency: new Decimal(0.5),
-            power_scaling: new Decimal(10),
             buyables: {}, // You don't actually have to initialize this one
         }},
         convertToDecimal() {
@@ -17,7 +15,7 @@ addLayer("m", {
 
         branches() {
             branchlist = [];
-            if(player[this.layer].buyables[12].eq(1) || player["p"].key_fusebox.eq(0)) branchlist.push("c1");
+            if(player[this.layer].buyables[12].eq(1) || !player["p"].fusebox_key) branchlist.push("c1");
             if(player[this.layer].buyables[13].eq(1)) branchlist.push("c2");
             if(player[this.layer].buyables[23].eq(1)) branchlist.push("c3");
             if(player[this.layer].buyables[33].eq(1)) branchlist.push("c4");
@@ -36,17 +34,6 @@ addLayer("m", {
         baseResource: "oxygen", // Name of resource prestige is based on
         baseAmount() {return player.points}, // Get the current amount of baseResource
         type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-        exponent: 0.5, // Prestige currency exponent
-        base:() => 5, // Only needed for static layers, base of the formula (b^(x^exp))
-        resCeil: false, // True if the cost needs to be rounded up (use when baseResource is static?)
-        canBuyMax() {}, // Only needed for static layers with buy max
-        gainMult() { // Calculate the multiplier for main currency from bonuses
-            mult = new Decimal(0)
-            return mult
-        },
-        gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
-        },
         row: 0, // Row the layer is in on the tree (0 is the first row)
 //        row: 1, // Row the layer is in on the tree (0 is the first row)
         effect() {
@@ -56,7 +43,7 @@ addLayer("m", {
         tabFormat: [
             ['display-text', function() {
                 //Start of game - maintenance before finding the fusebox
-                if(player.p.key_fusebox.eq(0)) return "<h2>MAINTENANCE</h2><br><br>\n\
+                if(!player["p"].fusebox_key) return "<h2>MAINTENANCE</h2><br><br>\n\
                 Life support in the majority of the facility has failed. You were the poor sap they sent to check out the fault, and whilst you were down here, it gave out entirely.\n\
                 Most of the facility has locked down to buy time for the occupants to evacuate, so you're unable to leave the area.<br><br>\n\
                 Fortunately, you've managed to barricade yourself in the maintenance room, where the surplus oxygen is stored.\n\
@@ -75,9 +62,10 @@ addLayer("m", {
             "blank",
             "milestones",
             "upgrades",
+            "clickables",
             function() {
                 for (buyid of [11,12,13,21,23,31,32,33]) {
-                    if (!getBuyableAmount("m", buyid).eq(1)) {
+                    if (!getBuyableAmount("m", buyid).eq(1) && player["p"].fusebox_key) {
                         distext = "You have " + player["p"].fuses + "/" + player["p"].fuses.add(player["p"].spent_fuses) + " fuses remaining."
                         return ["display-text", distext];
                     }
@@ -95,7 +83,7 @@ addLayer("m", {
 
         milestones: {
             0: {
-                unlocked() {return player["p"].key_fusebox.eq(1)},
+                unlocked() {return player["p"].fusebox_key},
                 requirementDescription() {
                     return "[LIFE SUPPORT RING: " + player["p"].total_circuits_repaired + "/8]"
                 },
@@ -161,9 +149,10 @@ addLayer("m", {
                 cost:() => new Decimal(0),
                 unlocked() { return hasUpgrade(this.layer, 11) }, // The upgrade is only visible when this is true
                 effect() {
-                    if(hasUpgrade(this.layer, 12)) doReset(this.layer)
+                    if(hasUpgrade(this.layer, 12)) layers[this.layer].doReset(this.layer)
                 },
             },
+/*
             13: {
                 title:() => "Activate Life Support",
                 description() {
@@ -175,10 +164,32 @@ addLayer("m", {
                     if(hasUpgrade(this.layer, 13)) {
                         // Commented out below line to allow for v0.1 endgame checking
                         // player["p"].tanks = new Decimal(3) //Sanity check - it's possible to skip a tank, this gives it back (to expand to give achievement/recognition)
-                        player["p"].chapter = "Chapter 1"
+                        player["p"].chapter = 1;
                     }
                 },
             },
+*/
+        },
+
+        clickables: {
+            11: {
+                title: "Activate Life Support",
+                display() { return "The circuit has been fully repaired. Throw the switch and reactivate life support!"; },
+                unlocked() { return player.points.gte(layers["p"].maxOxygen()) && player["p"].total_circuits_repaired.eq(8); },
+                canClick() { return true; },
+                onClick() {
+                    showNavTab("interior");
+                    showTab("mc");
+                    if (player["p"].tanks.eq(2)) {
+                        player["p"].chapter_0_two_tanks = 1;
+                    } else {
+                        player["p"].chapter_0_two_tanks = -1;
+                    }
+                    player.interstitialName = "chapter_1";
+                    player.showInterstitial = true;
+                }
+                     
+            }
         },
 //
 // ####    ##  ##  ##  ##    ##    ####    ##      ######    ##  
@@ -192,15 +203,6 @@ addLayer("m", {
 buyables: {
         rows: 3,
         cols: 3,
-        //
-        // ####    ####      ##    ##        ##      ##    ##  ##  ######
-        // ##  ##  ##  ##  ##  ##  ##      ##  ##  ##  ##  ##  ##  ##    
-        // ##  ##  ##  ##  ##  ##  ##      ##  ##  ##      ##  ##  ##    
-        // ####    ####    ##  ##  ##      ##  ##  ##  ##  ##  ##  ######
-        // ##      ##  ##  ##  ##  ##      ##  ##  ##  ##  ##  ##  ##    
-        // ##      ##  ##  ##  ##  ##      ##  ##  ##  ##  ##  ##  ##    
-        // ##      ##  ##    ##    ######    ##      ##      ##    ######
-        //
 
         11: {
                 title:() => "C8 Fuse Slot", // Optional, displayed at the top in a larger font
@@ -216,7 +218,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 8."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -262,7 +264,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 1."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -272,8 +274,8 @@ buyables: {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
-                        player["p"].c6_diagnostic_run = new Decimal(0) //Power down C6 terminal when off
-                        player["p"].c1_fan_disabled = new Decimal(0) //Re-enable the fan in C1
+                        player["p"].c6_diagnostic_run = false //Power down C6 terminal when off
+                        player["p"].c1_fan_disabled = false //Re-enable the fan in C1
                         layers["p"].setCircuit(1,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -310,7 +312,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 2."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -320,7 +322,7 @@ buyables: {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
-                        player["p"].c6_diagnostic_run = new Decimal(0) //Reset compactor diagnostic in Corridor 6
+                        player["p"].c6_diagnostic_run = false //Reset compactor diagnostic in Corridor 6
                         layers["p"].setCircuit(2,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -357,7 +359,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 7."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -367,7 +369,7 @@ buyables: {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
-                        player["p"].c7_vents_open = new Decimal(0) //Close the vents if Corridor 7 is powered down
+                        player["p"].c7_vents_open = false //Close the vents if Corridor 7 is powered down
                         layers["p"].setCircuit(7,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -401,7 +403,7 @@ buyables: {
                     return "Place fuses in the slots to provide power to that section of the corridor.\n\
                     Removing a fuse may revert certain changes."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {},
                 buy() {},
                 buyMax() {}, // You'll have to handle this yourself if you want
@@ -427,7 +429,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 3."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -437,7 +439,6 @@ buyables: {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
-                        player["p"].c3_lock_analysed = new Decimal(0) //If the terminal in Corridor 3 is off the lock analysis cannot be used
                         layers["p"].setCircuit(3,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -474,7 +475,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 6."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -484,9 +485,9 @@ buyables: {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
-                        player["p"].c6_diagnostic_run = new Decimal(0) //Power down C6 terminal when off
-                        player["p"].c6_filter_override = new Decimal(0) //Re-enable the filter in C6
-                        player["p"].c1_fan_disabled = new Decimal(0) //Re-enable the fan in C1
+                        player["p"].c6_diagnostic_run = false //Power down C6 terminal when off
+                        player["p"].c6_filter_override = false //Re-enable the filter in C6
+                        player["p"].c1_fan_disabled = false //Re-enable the fan in C1
                         layers["p"].setCircuit(6,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -523,7 +524,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 5."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -533,9 +534,10 @@ buyables: {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
-                        player["p"].c5_tamper_bypassed = new Decimal(0) //Disable the tamper bypass in corridor 5 (for corridor 4)
-                        player["p"].c5_lock_scanned = new Decimal(0) //Reset the lock in Corridor 5, if scanned the scan is useless
-                        player["p"].c3_lock_analysed = new Decimal(0) //Reset the lock in Corridor 5, if analysed in Corridor 3 the analysis is usesless
+                        player["p"].c5_tamper_bypassed = false //Disable the tamper bypass in corridor 5 (for corridor 4)
+                        if (player["p"].c5_lock_scanned) {
+                            player["p"].c5_incorrect_scan = true;   // Scan no longer valid as the lock has reset
+                        }
                         layers["p"].setCircuit(5,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -572,7 +574,7 @@ buyables: {
                     return "-1 fuse\n\
                     Turns on the lights in Corridor 4."
                 },
-                unlocked() { return player["p"].key_fusebox.eq(1) }, 
+                unlocked() { return player["p"].fusebox_key }, 
                 canAfford() {
                     if(player[this.layer].buyables[this.id].gte(1)) return true
                     return (player["p"].fuses.gte(1))
@@ -583,7 +585,7 @@ buyables: {
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
                         layers["p"].setCircuit(4,0) //Break the circuit in this corridor
-                        player["p"].c4_failed_completion = new Decimal(0)
+                        player["p"].c4_failed_completion = false
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
                         player[this.layer].buyables[this.id] = new Decimal(1)
@@ -606,16 +608,6 @@ buyables: {
                 buyMax() {}, // You'll have to handle this yourself if you want
             },
 
-        //
-        //   ##    ##  ##    ##    ####    ######  ######  ####              ##  
-        // ##  ##  ##  ##  ##  ##  ##  ##    ##    ##      ##  ##          ####  
-        // ##      ##  ##  ##  ##  ##  ##    ##    ##      ##  ##            ##
-        // ##      ######  ######  ####      ##    ######  ####              ##  
-        // ##      ##  ##  ##  ##  ##        ##    ##      ##  ##            ##  
-        // ##  ##  ##  ##  ##  ##  ##        ##    ##      ##  ##            ##  
-        //   ##    ##  ##  ##  ##  ##        ##    ######  ##  ##          ######
-        //
-
         },
 
 //  ####    ######    ##    ######  ######          ##        ##      ##    ####  
@@ -632,7 +624,7 @@ buyables: {
             m_reset_to_keep = []
             //Pre-reset checks to retain variables:
             //If fusebox key owned retain fuse configuration
-            if(player["p"].key_fusebox.eq(1)) {
+            if(player["p"].fusebox_key) {
                 m_reset_to_keep.push("buyables")
 //                temp_buyables = player[this.layer].buyables;
             }
@@ -642,43 +634,46 @@ buyables: {
             //            if(player["p"].total_circuits_repaired.lt(8)) layers["p"].resetCircuits()
 
             //Close vents in Corridors 3 and 7
-            player["p"].c7_vents_open = new Decimal(0)
+            player["p"].c7_vents_open = false
 
             //Disable tamper bypass in Corridor 5 (for Corridor 4)
-            player["p"].c5_tamper_bypassed = new Decimal(0)
+            player["p"].c5_tamper_bypassed = false
             //Clear the tamper lockdown on Corridor 4
-            player["p"].c4_failed_completion = new Decimal(0)
+            player["p"].c4_failed_completion = false
 
             //Reset the lock in Corridor 5
-            player["p"].c5_lock_scanned = new Decimal(0)
+            player["p"].c5_lock_scanned = false
             //Reset the lock analysis in Corridor 3
-            player["p"].c3_lock_analysed = new Decimal(0)
+            player["p"].c3_lock_analysed = false
+            //Reset the incorrect scan flags
+            player["p"].c5_incorrect_scan = false;
+            player["p"].c5_incorrect_tried = false;
 
             //Drop the cable from Corridor 1
-            player["p"].c1_holding_cable = new Decimal(0)
+            player["p"].c1_holding_cable = false
             //Unplug the cable from Corridor 7
-            player["p"].c7_plugged_in = new Decimal(0)
+            player["p"].c7_plugged_in = false
             //Reset the maintenance diagnostic in Corridor 6
-            player["p"].c6_diagnostic_run = new Decimal(0)
+            player["p"].c6_diagnostic_run = false
 
             //Return wires to wall in Corridor 4
-            player["p"].c4_loose_wires = new Decimal(0)
+            player["p"].c4_loose_wires = false
             //Reset filter override in Corridor 6
-            player["p"].c6_filter_override = new Decimal(0)
+            player["p"].c6_filter_override = false
             //Reactivate fan in Corridor 1
-            player["p"].c1_fan_disabled = new Decimal(0)
+            player["p"].c1_fan_disabled = false
             //"Unfeed" the wires from Corridor 2
-            player["p"].c2_wires_fed = new Decimal(0)
+            player["p"].c2_wires_fed = false
             //For safety, ensure no records of collision still linger in Corridor 2
-            player["p"].c2_failed_completion = new Decimal(0)
-            player["p"].c2_unpowered_collision = new Decimal(0)
+            player["p"].c2_failed_completion = false
+            player["p"].c2_unpowered_collision = false
 
             //Perform reset
             layerDataReset(this.layer,m_reset_to_keep)
 
             //Post-reset variable re-adding
 /*
-            if(player["p"].key_fusebox.eq(1)) {
+            if(player["p"].fusebox_key) {
                 player[this.layer].buyables = temp_buyables;
             }
 */
@@ -693,7 +688,7 @@ buyables: {
         layerShown() {return true}, // Condition for when layer appears on the tree
         update(diff) {
                 //Reset if oxygen runs out (return to maintenance)
-                if (player.points.lte(0) && player.tab == "m") doReset(this.layer)
+                if (player.points.lte(0) && player.tab == "m") layers[this.layer].doReset(this.layer)
                 //Gradually refill oxygen when not venturing out
                 if (player.points.lt(layers["p"].maxOxygen()) && !hasUpgrade(this.layer, 11)) player.points = player.points.add(player.points.div(5)).min(layers["p"].maxOxygen())
         }, // Do any gameloop things (e.g. resource generation) inherent to this layer
@@ -708,7 +703,7 @@ buyables: {
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
         hotkeys: [
-            {key: "m", description: "M: Return to the Maintenance room", onPress(){showTab("m")}},
+            {key: "m", description: "M: Return to the Maintenance room", onPress(){showTab("m")},unlocked() { return player["p"].chapter == 0}},
         ],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 

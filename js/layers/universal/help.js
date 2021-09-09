@@ -76,29 +76,30 @@ addLayer("h", {
 tabFormat: {
     "Overview": {
         content: [
-            ["display-text", "<h2>Overview</h2><br><br><p>TreeQuest is a puzzle-adventure game using The Modding Tree as an engine. Whilst there will [eventually] (meaning in later updates) be incremental features, a key gameplay component is (and will still be) exploration.</p><br>\n\
-            <p>The 'nodes' on the main screen represent a map of the area you're in, as though viewed from above - each node is a room or a part of an area, and may contain items or tasks to complete.</p><br>\n\
-            <p>Your objective will vary, but can always be found in the 'Personal' node (the P in the side list). This tab contains various help topics, more of which will [eventually] be added as you progress.</p><br><br><br>\n\
+            ["display-text", "<h2>Overview</h2><br><br><p>TreeQuest is a puzzle-adventure game using The Modding Tree as an engine. Whilst there may [eventually]  be incremental features, TreeQuest is at its heart a game about puzzles/exploration.</p><br>\n\
+            <p>The 'nodes' on the main screen represent a map of the area you're in, usually as though viewed from above - each node is a room or a part of an area, and may contain items or tasks to complete.</p><br>\n\
+            <p>Your objective will vary, but can always be found in the 'Personal' node (the P in the side list). This tab contains various help topics, more of which will be added as you progress.</p><br><br><br>\n\
             Note: Use of [eventually] in these pages hints at functionality planned for a later update."],
-        ],
-    },
-    "Oxygen": {
-        content: [
-            ["display-text", "<h2>Oxygen</h2><br><br><p>Your primary resource in this game is your oxygen level. This number is an abstraction that represents the number of seconds you can spend outside the safe zone (whilst still allowing for you to return to safety afterwards).</p><br>\n\
-            <p>When you venture out of safety and perform tasks, the oxygen level will decrease. Once it hits zero, you will need to return to the safe zone, where your oxygen will automatically refill.</p><br>\n\
-            <p>You start the game with one oxygen tank, granting you a total of ten seconds' venturing time. Finding additional tanks will increase this limit. [Eventually,] you may have the option to improve its efficiency.</p>"],
         ],
     },
     "Tasks": {
         content: [
-            ["display-text", "<h2>Tasks</h2><br><br><p>Your primary aim when enturing outside of the safe zone is to complete tasks. These tasks are represented in the form of buyables, and will all behave in a similar way. Tasks are colour-coded for easy recognition, as below:</p><br>\n\
-            <ul><li>Red: this task cannot be completed right now. This usually means you lack a necessary item or a pre-requisite task has not yet been completed. The text will usually give you an indication of what you need to do first.</li>\n\
-            <li>Amber: this task is available to be completed. The description will state what the task will do and provide a duration in seconds. Once you begin the task it will fill green to show its progress.</li>\n\
-            <li>Green: this task has been completed. It remains visible, usually with a hint to a subsequent task it enables you to complete.</li></ul><br><br>\n\
-            <p>Tasks that remain visible and green will have one or more related tasks to complete. In many cases, they will reset if you run out of oxygen or stop venturing out, so you will need to plan your route to ensure you can complete all the required tasks.</p><br>\n\
-            <p>Once a task is completely finished with (if the task is stand-alone, or the final related task in the chain has been completed) its icon will disappear completely. Usually you will receive an item or [eventually] the gameplay will change in some way.</p><br>\n\
+            ["display-text", "<h2>Tasks</h2><br><br><p>The primary way to make progress is to complete tasks. These tasks are represented in the form of buyables, and will all behave in a similar way. Tasks are colour-coded for easy recognition, as below:</p><br>\n\
+            <ul><li style='color: #bf7f7f'>Red: this task cannot be completed right now. This usually means you lack a necessary item or a pre-requisite task has not yet been completed. The text will usually give you an indication of what you need to do first.</li>\n\
+            <li style='color: #cfec23'>Amber: this task is available to be completed. The description will state what the task will do and provide a duration in seconds. Once you begin the task it will fill green to show its progress.</li>\n\
+            <li style='color: #19fc3d'>Green: this task has been completed. It remains visible, usually with a hint to a subsequent task it enables you to complete.</li></ul><br><br>\n\
+            <p>Tasks that remain visible and green will have one or more related tasks to complete. Once a task is completely finished with (if the task is stand-alone, or the final related task in the chain has been completed) its icon will disappear completely. Usually you will receive an item or the gameplay will change in some way.</p><br>\n\
             <p>Tasks take your entire focus, so only one can be completed at a time - starting a task will turn the others in the area red. In addition, if you leave the area before a task has been completed, your progress will be lost!</p>"],
         ],
+    },
+    "Oxygen": {
+        content: [
+            ["display-text", "<h2>Oxygen</h2><br><br><p>Your primary resource in this game is your oxygen level. This number is an abstraction that represents the number of seconds you can spend outside of safe zones (whilst still allowing for you to return to safety afterwards).</p><br>\n\
+            <p>When you venture out of safety and perform tasks, the oxygen level will decrease. Once it hits zero, you will need to return to a safe zone, where your oxygen will automatically refill.</p><br>\n\
+            <p>You start the game with one oxygen tank, granting you a total of ten seconds' venturing time. Finding additional tanks will increase this limit.</p><br><br>\n\
+            In-progress task chains may reset if you run out of oxygen or stop venturing out, so you will need to plan your route to ensure you can complete all required tasks in time."],
+        ],
+        unlocked() { return player.p.chapter >= 0 }
     },
     "Fusebox": {
         content: [
@@ -106,8 +107,37 @@ tabFormat: {
             <p>You start with one fuse, in the Corridor 1 slot. You can click to remove this fuse, which will then allow you to place it in another corridor. As you find additional fuses, you can power multiple sections at once.</p><br>\n\
             <p>You can only venture in powered sections. You can change which sections are powered whilst still in 'venture' mode, but most tasks will reset if their section is powered off, or be uncompletable if a preceding section is. (There are exceptions to this. Whilst not required, they will let you 'sequence break', so feel free to experiment!)"]
         ],
-        unlocked() { return player.p.chapter=="prologue" && player.p.key_fusebox.eq(1) }
-    }
+        unlocked() { return player.p.chapter == 0 && player.p.fusebox_key }
+    },
+    "Generators": {
+        content: [
+            ["display-text", "<h2>Generators</h2><br><br><p>The eight generators (one each in nodes G1 through G8) will produce power when active. Each generator takes the power output from the previous one and performs some function to it, after a deduction for inefficiency. If a stable loop is formed - that is, if a generator has the same amount of power after a full loop - the average power level of all 8 generators will appear as the output in the MC layer.</p><br>\n\
+            <p>You can toggle the generators on (or off) from the MC layer. This will kickstart the generators by feeding 100 power into generator 1. However, as five of the generators start broken, you won't be able to make a stable loop, so they'll switch back off again. By exploring further you'll be able to repair some/all of the generators, and produce power.</p><br>\n\
+            <p>[Eventually], you will be able to swap out or improve generators to improve overall power generation.</p>"]
+        ],
+        unlocked() { return player.p.chapter >= 1 }
+    },
+
+    "Vertical Map": {
+        content: [
+            ["display-text", "<h2>Vertical Map</h2><br><br><p>Once you've activated the life support, you'll be able to access the Vertical Map, through the Main Elevator (ME) node. This will swap the tree from a top-down view of the basement, into a side-on view of the facility as a whole. Most nodes on the Vertical Map will be hidden, until you move into an adjacent node.</p><br>\n\
+            <p>Nodes on the tree require a certain amount of power (see the Generators tab) to be 'powered' - below this level, they will be 'unpowered'. Nodes will behave differently based on whether or not they're powered, so you may need to increase your power output (or maybe even decrease it!) in order to proceed.</p><br>\n\
+            <p>In the Vertical Map you'll find items that unlock/activate nodes on the 'normal' map. As the game proceeds it'll be worth revisiting regularly.</p>"]
+        ],
+        unlocked() { return player["vtb"].visited_ever }
+    },
+
+    "Neural Imprinting": {
+        content: [
+            ["display-text", "<h2>Neural Imprinting</h2><br><br><p>When the Network Interface (NI) node is unlocked/activated, it will become the Neural Imprinting (NI) node. This node houses a number of 'imprints' (essentially challenges) with quality-of-life gameplay improvements as their rewards.</p><br>\n\
+            <p>You can hover over an imprint to see [a clue to? it's pretty opaque for now] its completion conditions. Each imprint can be completed one of two ways:</p><br>\n\
+            <ul><li>Regular Completion: The 'standard' way to complete the objective. This will [usually? probably always] be linked to a mandatory point of progression.</li>\n\
+            <li>Gold Completion: The 'challenge' way to complete the objective. This will usually require performing something outside of normal progression, and will allow you to access the reward early. If the gold condition is failed/missed, it will appear crossed out in red.</li></ul><br><br>\n\
+            <p>The actual reward is the same either way - by the end of the game you'll have the same rewards, but attempting all-golds could prove a nice additional challenge. [At least, once there are more than two entries in there]</p>"]
+        ],
+        unlocked() { return player["p"].neural_imprinting_active }
+    },
+
 }
 
 })

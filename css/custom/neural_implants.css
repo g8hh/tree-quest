@@ -1,0 +1,16 @@
+td.milestone .tooltip, td.milestoneDone .tooltip {
+    width: 600px;
+}
+
+.doneConditionNI {
+    color: #77bf5f;
+}
+
+.goldConditionNI {
+    color: gold;
+}
+
+.failedConditionNI {
+    color: #bf8f8f;
+    text-decoration: line-through;
+}

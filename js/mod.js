@@ -1,6 +1,6 @@
 let modInfo = {
 	name: "TreeQuest",
-	id: "treequest-nova",
+	id: "treequest-nova-sr",
 	author: "smiley#0443",
 	pointsName: "oxygen",
 	modFiles: [
@@ -52,11 +52,17 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.2.1",
+	num: "0.2.1-SR",
 	name: "Generations/Historia",
 }
 
 let changelog = `<h1>TreeQuest Changelog:</h1><br><br>
+
+<h3>v0.2.1-SR</h3><br>
+Speedrun settings additions:
+-Option to enable Speedrun Mode, which controls the following:<br>
+-Times for each section are now stored and displayed<br>
+-Additional breakpoint at NI layer<br><br>
 
 <h3>v0.2.1 (Historia)<br>
 Content additions:<br>
@@ -139,6 +145,7 @@ function addedPlayerData() {
 	return {
 		showInterstitial: true,
 		interstitialName: "begin_game",
+		interstitialTimes: [],
 		usingOldSave: false,
 	}
 }

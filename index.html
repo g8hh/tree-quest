@@ -73,7 +73,12 @@
 		<div v-if="player.showInterstitial" class="interstitial">
 			<span v-html=interstitialList[player.interstitialName].content></span>
 			<br><br>
-			<div v-if="player.interstitialName == `endgame`">Time played: {{formatTime(player.timePlayed)}} </div>
+			<div v-if="options.speedrunMode">
+				<div>Time splits:</div>
+				<div v-for="time of player.interstitialTimes">{{time[0]}}: {{formatTime(time[1])}}</div>
+				<div>{{player.interstitialName}}: {{formatTime(player.timePlayed)}} </div>
+			</div>
+			<div v-if="!options.speedrunMode && player.interstitialName == `endgame`">Time played: {{formatTime(player.timePlayed)}}</div>
 			<br><br>
 			<span v-html=interstitialList[player.interstitialName].buttons></span>
 		</div>

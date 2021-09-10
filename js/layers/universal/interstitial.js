@@ -50,6 +50,11 @@ interstitialList = {
         `,
         buttons: `<button class="longUpg can" onclick="closeInterstitial()">Proceed</button>`
     },
+    "neural_imprinting": {
+        content: `<br><h2>Speedrun checkpoint - Neural Imprinting</h2><br><br>
+        This is a breakpoint for the sake of convenience, to split up the long final section into two more manageable chunks (and give you another segment time).`,
+        buttons: `<button class="longUpg can" onclick="closeInterstitial()">Proceed</button>`
+    },
     "endgame": {
         content:`<br>
         <h1>${modInfo.name}</h1><br><br>
@@ -62,6 +67,7 @@ interstitialList = {
 }
 
 function closeInterstitial() {
+    player.interstitialTimes.push([player.interstitialName,player.timePlayed]);
     player.showInterstitial = false;
 
     switch(player.interstitialName) {   // Any setup that needs to be done as part of the chapter/interstitial change. Popups etc

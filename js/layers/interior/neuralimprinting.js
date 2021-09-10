@@ -234,6 +234,10 @@ addLayer("ini", {
                 player[this.layer].buyables[11] = player[this.layer].buyables[11].minus(diff).max(0);
                 if (player[this.layer].buyables[11].lte(0)) {   //When completed:
                     player["p"].neural_imprinting_active = true;  // Activate the "true" Neural imprinting layer
+                    if (options.speedrunMode) {
+                        player.interstitialName = "neural_imprinting";
+                        player.showInterstitial = true;
+                    }
                     player["p"].is_acting = false;
                 }
             }

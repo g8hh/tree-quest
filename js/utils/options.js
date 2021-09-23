@@ -13,6 +13,8 @@ function getStartOptions() {
 		showStory: true,
 		forceOneTab: false,
 		oldStyle: false,
+		tooltipForcing: true,
+		speedrunMode: false,
 	}
 }
 

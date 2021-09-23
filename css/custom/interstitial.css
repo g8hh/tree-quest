@@ -1,0 +1,10 @@
+.interstitial {
+	position: absolute;
+    left: 10%;
+	height: 100%;
+	width: 80%;
+	min-width: 80%;
+	overflow-y: auto;
+	overflow-x: auto;
+	transition-duration: 0s;
+}

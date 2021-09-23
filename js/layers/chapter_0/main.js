@@ -62,9 +62,10 @@ addLayer("m", {
             "blank",
             "milestones",
             "upgrades",
+            "clickables",
             function() {
                 for (buyid of [11,12,13,21,23,31,32,33]) {
-                    if (!getBuyableAmount("m", buyid).eq(1)) {
+                    if (!getBuyableAmount("m", buyid).eq(1) && player["p"].fusebox_key) {
                         distext = "You have " + player["p"].fuses + "/" + player["p"].fuses.add(player["p"].spent_fuses) + " fuses remaining."
                         return ["display-text", distext];
                     }
@@ -151,6 +152,7 @@ addLayer("m", {
                     if(hasUpgrade(this.layer, 12)) layers[this.layer].doReset(this.layer)
                 },
             },
+/*
             13: {
                 title:() => "Activate Life Support",
                 description() {
@@ -162,10 +164,32 @@ addLayer("m", {
                     if(hasUpgrade(this.layer, 13)) {
                         // Commented out below line to allow for v0.1 endgame checking
                         // player["p"].tanks = new Decimal(3) //Sanity check - it's possible to skip a tank, this gives it back (to expand to give achievement/recognition)
-                        player["p"].chapter = "Chapter 1"
+                        player["p"].chapter = 1;
                     }
                 },
             },
+*/
+        },
+
+        clickables: {
+            11: {
+                title: "Activate Life Support",
+                display() { return "The circuit has been fully repaired. Throw the switch and reactivate life support!"; },
+                unlocked() { return player.points.gte(layers["p"].maxOxygen()) && player["p"].total_circuits_repaired.eq(8); },
+                canClick() { return true; },
+                onClick() {
+                    showNavTab("interior");
+                    showTab("mc");
+                    if (player["p"].tanks.eq(2)) {
+                        player["p"].chapter_0_two_tanks = 1;
+                    } else {
+                        player["p"].chapter_0_two_tanks = -1;
+                    }
+                    player.interstitialName = "chapter_1";
+                    player.showInterstitial = true;
+                }
+                     
+            }
         },
 //
 // ####    ##  ##  ##  ##    ##    ####    ##      ######    ##  
@@ -179,15 +203,6 @@ addLayer("m", {
 buyables: {
         rows: 3,
         cols: 3,
-        //
-        // ####    ####      ##    ##        ##      ##    ##  ##  ######
-        // ##  ##  ##  ##  ##  ##  ##      ##  ##  ##  ##  ##  ##  ##    
-        // ##  ##  ##  ##  ##  ##  ##      ##  ##  ##      ##  ##  ##    
-        // ####    ####    ##  ##  ##      ##  ##  ##  ##  ##  ##  ######
-        // ##      ##  ##  ##  ##  ##      ##  ##  ##  ##  ##  ##  ##    
-        // ##      ##  ##  ##  ##  ##      ##  ##  ##  ##  ##  ##  ##    
-        // ##      ##  ##    ##    ######    ##      ##      ##    ######
-        //
 
         11: {
                 title:() => "C8 Fuse Slot", // Optional, displayed at the top in a larger font
@@ -424,7 +439,6 @@ buyables: {
                         player["p"].fuses = player["p"].fuses.add(1)
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
-                        player["p"].c3_lock_analysed = false //If the terminal in Corridor 3 is off the lock analysis cannot be used
                         layers["p"].setCircuit(3,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -521,8 +535,9 @@ buyables: {
                         player[this.layer].buyables[this.id] = new Decimal(0)
                         player["p"].spent_fuses = player["p"].spent_fuses.sub(1)
                         player["p"].c5_tamper_bypassed = false //Disable the tamper bypass in corridor 5 (for corridor 4)
-                        player["p"].c5_lock_scanned = false //Reset the lock in Corridor 5, if scanned the scan is useless
-                        player["p"].c3_lock_analysed = false //Reset the lock in Corridor 5, if analysed in Corridor 3 the analysis is usesless
+                        if (player["p"].c5_lock_scanned) {
+                            player["p"].c5_incorrect_scan = true;   // Scan no longer valid as the lock has reset
+                        }
                         layers["p"].setCircuit(5,0) //Break the circuit in this corridor
                     } else {
                         player["p"].fuses = player["p"].fuses.sub(1)
@@ -593,16 +608,6 @@ buyables: {
                 buyMax() {}, // You'll have to handle this yourself if you want
             },
 
-        //
-        //   ##    ##  ##    ##    ####    ######  ######  ####              ##  
-        // ##  ##  ##  ##  ##  ##  ##  ##    ##    ##      ##  ##          ####  
-        // ##      ##  ##  ##  ##  ##  ##    ##    ##      ##  ##            ##
-        // ##      ######  ######  ####      ##    ######  ####              ##  
-        // ##      ##  ##  ##  ##  ##        ##    ##      ##  ##            ##  
-        // ##  ##  ##  ##  ##  ##  ##        ##    ##      ##  ##            ##  
-        //   ##    ##  ##  ##  ##  ##        ##    ######  ##  ##          ######
-        //
-
         },
 
 //  ####    ######    ##    ######  ######          ##        ##      ##    ####  
@@ -640,6 +645,9 @@ buyables: {
             player["p"].c5_lock_scanned = false
             //Reset the lock analysis in Corridor 3
             player["p"].c3_lock_analysed = false
+            //Reset the incorrect scan flags
+            player["p"].c5_incorrect_scan = false;
+            player["p"].c5_incorrect_tried = false;
 
             //Drop the cable from Corridor 1
             player["p"].c1_holding_cable = false
@@ -695,7 +703,7 @@ buyables: {
         }, // Useful for if you gain secondary resources or have other interesting things happen to this layer when you reset it. You gain the currency after this function ends.
 
         hotkeys: [
-            {key: "m", description: "M: Return to the Maintenance room", onPress(){showTab("m")}},
+            {key: "m", description: "M: Return to the Maintenance room", onPress(){showTab("m")},unlocked() { return player["p"].chapter == 0}},
         ],
         incr_order: [], // Array of layer names to have their order increased when this one is first unlocked
 

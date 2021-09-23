@@ -1,6 +1,6 @@
 var layoutInfo = {
-    startTab: "gameStart",
-    startNavTab: "chapter0",
+    startTab: "prec",
+    startNavTab: "prologue",
 	showTree: true,
 
     treeLayout: ""
@@ -15,6 +15,17 @@ addNode("blank", {
 }, 
 )
 
+addLayer("prologue", {
+    tabFormat: [["tree", [
+        ["plab","pdec","pf3"],
+        ["prec","pcor","pf2"],
+        ["blank"],
+        ["blank","blank","pbf"],
+    ]]],
+
+    previousTab: "",
+    leftTab: true,
+});
 
 addLayer("chapter0", {
     tabFormat: [["tree", [
@@ -30,16 +41,25 @@ addLayer("chapter0", {
 
 addLayer("interior", {
     tabFormat: [["tree", [
-        ["nd"],
+        ["ism","ind","ini"],
         ["g8","g1","g2"],
-        ["wd","g7","mc","g3","ed"],
-        ["g6","g5","g4"],
-        ["sd"],
+        ["iwd","g7","mc","g3","ied"],
+        ["ime","g6","g5","g4","ien"],
+        ["isd"],
     ]]],
 
     previousTab: "",
     leftTab: true,
 });
+
+addLayer("vertical", {
+    tabFormat: [["tree", [
+        ["vt3l2","vt3l1","vt3","vt3r1","vt3r2"],
+        ["vt2l2","vt2l1","vt2","vt2r1","vt2r2"],
+        ["vt1l2","vt1l1","vt1","vt1r1","vt1r2"],
+        ["vtb"]
+    ]]]
+})
 
 /*
 addLayer("northworld", {

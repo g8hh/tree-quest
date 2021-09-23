@@ -14,10 +14,15 @@
 	<link rel="stylesheet" type="text/css" href="css/tree-node.css" />
 
 
-	<!-- custom CSS-->
+	<!-- custom CSS - layers -->
+	<link rel="stylesheet" type="text/css" href="css/custom/neural_implants.css" />
+	<link rel="stylesheet" type="text/css" href="css/custom/suit_maintenance.css" />
+	<link rel="stylesheet" type="text/css" href="css/custom/security-room.css" />
+
+	<!-- custom CSS - general -->
 	<link rel="stylesheet" type="text/css" href="css/custom/highlight-current.css" />
 	<link rel="stylesheet" type="text/css" href="css/custom/instant-ghost.css" />
-
+	<link rel="stylesheet" type="text/css" href="css/custom/interstitial.css" />
 
 	<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
 
@@ -48,12 +53,12 @@
 <script src="chs.js?07071443"></script>
 <script src="https://cdn.jsdelivr.net/gh/g8hh/g8hh.github.io/zh/core.js"></script>
 	<div id="app">
-		<canvas id="treeCanvas" class="canvas" v-if="!(tmp.gameEnded && !player.keepGoing) && player.tab != 'gameStart'"></canvas>
+		<canvas id="treeCanvas" class="canvas" v-if="!(tmp.gameEnded && !player.keepGoing) && !player.showInterstitial"></canvas>
 
 		<div v-if="false" id="loadingSection" class="fullWidth">
 			<h1>Loading... (If this takes too long it means there was a serious error!)←</h1>
 		</div>
-		<div class="vl" v-if="player.navTab !== 'none' && tmp.other.splitScreen && player.tab!='none' && !(tmp.gameEnded && !player.keepGoing) && player.tab != 'gameStart'"></div>
+		<div class="vl" v-if="player.navTab !== 'none' && tmp.other.splitScreen && player.tab!='none' && !(tmp.gameEnded && !player.keepGoing) && !player.showInterstitial"></div>
 		<div v-if="(tmp.gameEnded && !player.keepGoing)" class="fullWidth">
 			<br>
 			<h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>
@@ -67,18 +72,21 @@
 			<br><br><br>
 		</div>
 
-		<div v-if="player.tab=='gameStart'" class="fullWidth">
-			<br>
-			<h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>
-			<h2>This should be considered a prologue/demo - there's a fixed amount of gameplay.</h2><br>
-			<h3>This mod is closer in parts to an adventure/puzzle game than an incremental. (As it stands, there are no incremental features yet)</h3><br>
-			<h3>There's no offline progress, and early parts of the game are time-sensitive.</h3><br>
-			<h3>Hopefully the gameplay is intuitive. If not, check the Help (H) layer, or press H on the keyboard, for assistance.</h3><br><br>
-			<br>
-			<button class="longUpg can" onclick="beginGame()">Begin</button>
+		<div v-if="player.showInterstitial" class="interstitial">
+			<span v-html=interstitialList[player.interstitialName].content></span>
+			<br><br>
+			<div v-if="options.speedrunMode">
+				<div>Time splits:</div>
+				<div v-for="time of player.interstitialTimes">{{time[0]}}: {{formatTime(time[1])}}</div>
+				<div>{{player.interstitialName}}: {{formatTime(player.timePlayed)}} </div>
+			</div>
+			<div v-if="!options.speedrunMode && player.interstitialName == `endgame`">Time played: {{formatTime(player.timePlayed)}}</div>
+			<br><br>
+			<span v-html=interstitialList[player.interstitialName].buttons></span>
 		</div>
 
-		<div id="treeOverlay" v-if="!(tmp.gameEnded && !player.keepGoing) && player.tab != 'gameStart' && (player.tab === 'none' || tmp.other.splitScreen || !readData(layoutInfo.showTree))" class="treeOverlay" onscroll="resizeCanvas()"
+
+		<div id="treeOverlay" v-if="!(tmp.gameEnded && !player.keepGoing) && !player.showInterstitial && (player.tab === 'none' || tmp.other.splitScreen || !readData(layoutInfo.showTree))" class="treeOverlay" onscroll="resizeCanvas()"
 			v-bind:class="{ 
 			fullWidth: (player.tab == 'none' || player.navTab == 'none'), 
 			col: (player.tab !== 'none' && player.navTab !== 'none'), 
@@ -104,7 +112,7 @@
 							v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a></li>
 				</ul>
 			</div>
-			<overlay-head v-if="!(tmp.gameEnded && !player.keepGoing) && player.tab != 'gameStart'"></overlay-head>
+			<overlay-head v-if='!(tmp.gameEnded && !player.keepGoing) && !player.showInterstitial && player["p"].chapter >= 0'></overlay-head>
 			<div class="sideLayers">
 				<div v-for="(node, index) in OTHER_LAYERS['side']">
 					<tree-node :layer='node' :abb='tmp[node].symbol' :size="'small'" :key="'side' + index"></tree-node>
@@ -112,7 +120,7 @@
 			</div>
 		</div>
 		
-		<div v-if="!(tmp.gameEnded && !player.keepGoing) && player.tab != 'gameStart' && (player.tab === 'none' || tmp.other.splitScreen)" id="treeTab"  onscroll="resizeCanvas()" 
+		<div v-if="!(tmp.gameEnded && !player.keepGoing) && !player.showInterstitial && (player.tab === 'none' || tmp.other.splitScreen)" id="treeTab"  onscroll="resizeCanvas()" 
 			v-bind:class="{ fullWidth: (player.tab == 'none' || player.navTab == 'none'), col: (player.tab !== 'none' && player.navTab !== 'none'), left: (player.tab !== 'none' && player.navTab !== 'none')}">
 			<br><br><br><br>
 			<overlay-head id="fakeHead" style="visibility: hidden;">
@@ -137,7 +145,7 @@
 				</div>
 		</div>
 
-		<div v-if="player.navTab !== 'none' && player.tab !== 'none' && !(tmp.gameEnded && !player.keepGoing) && player.tab != 'gameStart'" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.navTab == 'none' || !tmp.other.splitScreen || !readData(layoutInfo.showTree), col: player.navTab != 'none', right: player.navTab != 'none', fast: true, tab: true}">
+		<div v-if="player.navTab !== 'none' && player.tab !== 'none' && !(tmp.gameEnded && !player.keepGoing) && !player.showInterstitial" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.navTab == 'none' || !tmp.other.splitScreen || !readData(layoutInfo.showTree), col: player.navTab != 'none', right: player.navTab != 'none', fast: true, tab: true}">
 			<div v-for="layer in LAYERS">
 				<div v-if="player.tab==layer">
 					<layer-tab :layer="layer" :back="'none'" :spacing="'50px'" :key="'left'"></layer-tab>

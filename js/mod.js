@@ -191,7 +191,7 @@ function maxTickLength() {
 function fixOldSave(oldVersion){
 	if (oldVersion.slice(0,3) == '0.1') {
 		player.usingOldSave = true;
-		if (confirm("This update has added content before the start of your previous playthrough. I *highly* recommend hard resetting - do you wish to do so?")) hardReset();
+		if (confirm("此更新在您之前的游戏开始之前添加了内容。 我*强烈*推荐硬重置 - 你想这样做吗？")) hardReset();
 	}
 }
 

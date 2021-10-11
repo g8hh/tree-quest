@@ -1,5 +1,5 @@
 let modInfo = {
-	name: "TreeQuest",
+	name: "任务树 - TreeQuest",
 	id: "treequest-nova",
 	author: "smiley#0443",
 	pointsName: "oxygen",

@@ -34,5 +34,7 @@ addLayer("pbf", {
 
     color: "gold",
 
-    tooltip() { return this.name; }
+    tooltip() { return this.name; },
+    lockedTooltip() { return this.tooltip(); }
+
 })

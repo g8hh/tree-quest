@@ -560,6 +560,9 @@ addLayer("vt1l2", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
+    },
+    lockedTooltip() {
+        return this.tooltip();
     }
 
 })
@@ -770,6 +773,9 @@ addLayer("vt1l1", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
+    },
+    lockedTooltip() {
+        return this.tooltip();
     }
 
 })
@@ -1074,7 +1080,7 @@ addLayer("vt1r1", {
     buyables: {
         11: {
             title() {
-                return "Slide the big crate to 1F";
+                return "Slide the big crate to the elevator";
             },
             cost(x) { // cost for buying xth buyable, can be an object if there are multiple currencies
                 return 0
@@ -1118,7 +1124,8 @@ addLayer("vt1r1", {
 
         12: {
             title() {
-                return "Slide the big crate to 1>";
+                if (player["vt1r2"].visited_ever) return "Slide the big crate to Post Storage";
+                return "Slide the big crate to the next room";
             },
             cost(x) { // cost for buying xth buyable, can be an object if there are multiple currencies
                 return 0
@@ -1230,6 +1237,9 @@ addLayer("vt1r1", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
+    },
+    lockedTooltip() {
+        return this.tooltip();
     }
 
 })
@@ -1246,7 +1256,7 @@ addLayer("vt1r2", {
     layer: "vt1r2", // This is assigned automatically, both to the layer and all upgrades, etc. Shown here so you know about it
 
     symbol() {
-        if (player[this.layer].visited_ever) return "1>";
+        if (player[this.layer].visited_ever) return "PS";
         else return "??";
     },
 
@@ -1274,7 +1284,7 @@ addLayer("vt1r2", {
     buyables: {
         11: {
             title() {
-                return "Slide the big crate to 1R";
+                return "Slide the big crate to the Post Room";
             },
             cost(x) { // cost for buying xth buyable, can be an object if there are multiple currencies
                 return 0
@@ -1424,6 +1434,9 @@ addLayer("vt1r2", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
+    },
+    lockedTooltip() {
+        return this.tooltip();
     }
 
 })

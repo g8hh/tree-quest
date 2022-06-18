@@ -178,9 +178,10 @@ addLayer("prec", {
 
     tooltip() {
         tip = this.name;
-        if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
+
 
 })
 
@@ -236,7 +237,9 @@ addLayer("pcor", {
     tooltip() {
         tip = this.name;
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
+
 
 })
 
@@ -469,6 +472,7 @@ addLayer("pf2", {
     tooltip() {
         tip = this.name;
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })

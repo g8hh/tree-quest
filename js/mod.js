@@ -1,7 +1,7 @@
 let modInfo = {
 	name: "TreeQuest",
 	id: "treequest-nova",
-	author: "smiley#0443",
+	author: "smiley#0432",
 	pointsName: "oxygen",
 	modFiles: [
 

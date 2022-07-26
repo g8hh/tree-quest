@@ -167,7 +167,8 @@ addLayer("vt3l2", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })
 
@@ -382,7 +383,8 @@ addLayer("vt3l1", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })
 
@@ -643,7 +645,8 @@ addLayer("vt3", {
         tip = this.name;
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })
 
@@ -710,7 +713,8 @@ addLayer("vt3r1", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })
 
@@ -777,6 +781,7 @@ addLayer("vt3r2", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })

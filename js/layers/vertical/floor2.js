@@ -192,6 +192,7 @@ addLayer("vt2l2", {
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
     },
+    lockedTooltip() { return this.tooltip(); }
 
 })
 
@@ -388,7 +389,8 @@ addLayer("vt2l1", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
     
 
@@ -560,7 +562,8 @@ addLayer("vt2", {
         tip = this.name;
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })
 
@@ -812,7 +815,8 @@ addLayer("vt2r1", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })
 
@@ -1039,6 +1043,7 @@ addLayer("vt2r2", {
         if (!player[this.layer].visited_ever) tip = tip.replace(/./g,"?");
         if (player["mc"].points.lt(this.powerRequirement)) tip += "<br> (unpowered)";
         return tip;
-    }
+    },
+    lockedTooltip() { return this.tooltip(); }
 
 })
